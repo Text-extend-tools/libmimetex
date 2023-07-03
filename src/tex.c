@@ -30,7 +30,7 @@
 #include <string.h>
 #include <math.h>
 #include "mimetex_priv.h"
-  
+
 
 /* ==========================================================================
  * Function:    strdetex ( s, mode )
@@ -139,20 +139,21 @@ char    *strtexchr(char *string, char *texchr)
     locate texchr in string
     ------------------------------------------------------------ */
     if (string != (char *)NULL       /* check that we got input string */
-            &&   texchrlen > 0) {           /* and a texchr to search for */
+            &&   texchrlen > 0)             /* and a texchr to search for */
+    {
         while ((ptexchr = strstr(pstring, texchr)) /* look for texchr in string */
                 != (char *)NULL)           /* found it */
             if ((delim = ptexchr[texchrlen])   /* char immediately after texchr */
                     /* texchr at very end of string */
                     ==   '\000') break;
             else
-            /* if there are chars after texchr */
+                /* if there are chars after texchr */
                 if (isalpha(delim)            /*texchr is prefix of longer symbol*/
                         ||   0)              /* other tests to be determined */
                     /* continue search after texchr */
                     pstring = ptexchr + texchrlen;
                 else
-                /* passed all tests */
+                    /* passed all tests */
                     break;
     }                /*so return ptr to texchr to caller*/
     /* ptr to texchar back to caller */
@@ -187,9 +188,9 @@ char    *findbraces(char *expression, char *command)
     /* true to find left opening { */
     int isopen = (expression == NULL ? 0 : 1);
     char *left = "{", *right = "}",  /* delims bracketing {x\command y} */
-         *delim = (isopen ? left : right),   /* delim we want,  { if isopen */
-         *match = (isopen ? right : left),   /* matching delim, } if isopen */
-         *brace = NULL; /* ptr to delim returned to caller */
+          *delim = (isopen ? left : right),   /* delim we want,  { if isopen */
+           *match = (isopen ? right : left),   /* matching delim, } if isopen */
+            *brace = NULL; /* ptr to delim returned to caller */
     /* pointer increment */
     int inc = (isopen ? -1 : +1);
     /* nesting level, for {{}\command} */
@@ -201,15 +202,19 @@ char    *findbraces(char *expression, char *command)
     /* ------------------------------------------------------------
     search for left opening { before command, or right closing } after command
     ------------------------------------------------------------ */
-    while (1) {              /* search for brace, or until end */
+    while (1)                /* search for brace, or until end */
+    {
         /* --- next char to check for delim --- */
         /* bump ptr left or right */
         ptr += inc;
         /* --- check for beginning or end of expression --- */
-        if (isopen) {              /* going left, check for beginning */
+        if (isopen)                /* going left, check for beginning */
+        {
             /* went before start of string */
             if (ptr < expression) break;
-        } else {
+        }
+        else
+        {
             /* went past end of string */
             if (*ptr == '\000') break;
         }
@@ -220,7 +225,8 @@ char    *findbraces(char *expression, char *command)
                 continue;
         /* --- check for delim --- */
         if (isthischar(*ptr, delim))       /* found delim */
-            if (--level == 0) {          /* and it's not "internally" nested*/
+            if (--level == 0)            /* and it's not "internally" nested*/
+            {
                 /* set ptr to brace */
                 brace = ptr;
                 goto end_of_job;
@@ -271,8 +277,8 @@ char    *texchar(mimetex_ctx *mctx, char *expression, char *chartoken)
     Allocations and Declarations
     ------------------------------------------------------------ */
     int esclen = 0,             /*length of escape sequence*/
-                 /* max len of esc sequence */
-                 maxesclen = 128;
+        /* max len of esc sequence */
+        maxesclen = 128;
     /* ptr into chartoken */
     char    *ptoken = chartoken;
     /* prefix index */
@@ -286,7 +292,8 @@ char    *texchar(mimetex_ctx *mctx, char *expression, char *chartoken)
         "\\bigr", "\\Bigr", "\\biggr", "\\Biggr", NULL
     };
     /* may be followed by * */
-    static  char *starred[] = {
+    static  char *starred[] =
+    {
         "\\hspace",  "\\!",  NULL
     };
     /* ------------------------------------------------------------
@@ -303,12 +310,14 @@ char    *texchar(mimetex_ctx *mctx, char *expression, char *chartoken)
     /* here's first character */
     *ptoken++ = *expression++;
     /* --- if first char isn't \, then just return it to caller --- */
-    if (!isthischar(*(expression - 1), ESCAPE)) { /* not a \, so return char */
+    if (!isthischar(*(expression - 1), ESCAPE))   /* not a \, so return char */
+    {
         /* add a null terminator */
         *ptoken = '\000';
         goto end_of_job;
     }              /* ptr past returned char */
-    if (*expression == '\000') {         /* \ is very last char */
+    if (*expression == '\000')           /* \ is very last char */
+    {
         /* flush bad trailing \ */
         *chartoken = '\000';
         return(NULL);
@@ -317,7 +326,8 @@ char    *texchar(mimetex_ctx *mctx, char *expression, char *chartoken)
     we have an escape sequence, so return all alpha chars following \
     ------------------------------------------------------------ */
     /* --- accumulate chars until first non-alpha char found --- */
-    for (; isalpha(*expression); esclen++) { /* till first non-alpha... */
+    for (; isalpha(*expression); esclen++)   /* till first non-alpha... */
+    {
         if (esclen < maxesclen - 3)          /* more room in chartoken */
             /*copy alpha char, bump ptr*/
             *ptoken++ = *expression;
@@ -327,7 +337,8 @@ char    *texchar(mimetex_ctx *mctx, char *expression, char *chartoken)
     /* set null for compare */
     *ptoken = '\000';
     for (iprefix = 0; prefixes[iprefix] != NULL; iprefix++) /* run thru list */
-        if (strcmp(chartoken, prefixes[iprefix]) == 0) { /* have an exact match */
+        if (strcmp(chartoken, prefixes[iprefix]) == 0)   /* have an exact match */
+        {
             char nextchar[256];
             /* texchar after prefix */
             int nextlen = 0;
@@ -335,7 +346,8 @@ char    *texchar(mimetex_ctx *mctx, char *expression, char *chartoken)
             skipwhite(expression);
             /* get nextchar */
             expression = texchar(mctx, expression, nextchar);
-            if ((nextlen = strlen(nextchar)) > 0) {  /* #chars in nextchar */
+            if ((nextlen = strlen(nextchar)) > 0)    /* #chars in nextchar */
+            {
                 /* append nextchar */
                 strcpy(ptoken, nextchar);
                 /* point to null terminator*/
@@ -353,7 +365,8 @@ char    *texchar(mimetex_ctx *mctx, char *expression, char *chartoken)
     /* --- check for \hspace* or other starred commands --- */
     for (iprefix = 0; starred[iprefix] != NULL; iprefix++) /* run thru list */
         if (strcmp(chartoken, starred[iprefix]) == 0)   /* have an exact match */
-            if (*expression == '*') {          /* follows by a * */
+            if (*expression == '*')            /* follows by a * */
+            {
                 /* copy * and bump ptr */
                 *ptoken++ = *expression++;
                 /* null-terminate token */
@@ -361,14 +374,16 @@ char    *texchar(mimetex_ctx *mctx, char *expression, char *chartoken)
                 break;
             }                   /* stop checking */
     /* --- respect spaces in text mode, except first space after \escape --- */
-    if (esclen >= 1) {               /*only for alpha \sequences*/
+    if (esclen >= 1)                 /*only for alpha \sequences*/
+    {
         if (istextmode)                /* in \rm or \it text mode */
             if (isthischar(*expression, WHITEDELIM))  /* delim follows \sequence */
                 expression++;
     }             /* so flush delim */
     /* --- back to caller --- */
 end_of_job:
-    if (mctx->msgfp != NULL && mctx->msglevel >= 999) {
+    if (mctx->msgfp != NULL && mctx->msglevel >= 999)
+    {
         fprintf(mctx->msgfp, "texchar> returning token = \"%s\"\n", chartoken);
         fflush(mctx->msgfp);
     }
@@ -439,8 +454,8 @@ char    *texsubexpr(mimetex_ctx *mctx, char *expression, char *subexpr, int maxs
     char    *origexpression = expression, *origsubexpr = subexpr;
     /* check for \left, and get it */
     int gotescape = 0,      /* true if leading char of expression is \ */
-                    /* while parsing, true if preceding char \ */
-                    prevescape = 0;
+        /* while parsing, true if preceding char \ */
+        prevescape = 0;
     /* true matches any right with left, (...] */
     int isanyright = 1;
     /* true if left brace is a \. */
@@ -471,7 +486,8 @@ char    *texsubexpr(mimetex_ctx *mctx, char *expression, char *subexpr, int maxs
     if (gotescape)               /* begins with \ */
         if (memcmp(expression + 1, "left", 4))      /* and followed by left */
             if (strchr(left, 'l') != NULL)         /* caller wants \left's */
-                if (strtexchr(expression, "\\left") == expression) { /*expression=\left...*/
+                if (strtexchr(expression, "\\left") == expression)   /*expression=\left...*/
+                {
                     char *pright = texleft(mctx, expression, subexpr, maxsubsz, /* find ...\right*/
                                            (isdelim ? NULL : leftdelim), rightdelim);
                     /* caller wants delims */
@@ -480,11 +496,13 @@ char    *texsubexpr(mimetex_ctx *mctx, char *expression, char *subexpr, int maxs
                     return (pright);
                 } /* --- end-of-if(expression=="\\left") --- */
     /* --- if first char isn't left{ or script, just return it to caller --- */
-    if (!isbrace(mctx, expression, left, isescape)) {  /* not a left{ */
+    if (!isbrace(mctx, expression, left, isescape))    /* not a left{ */
+    {
         if (!isthischar(*expression, SCRIPTS))     /* and not a script */
             /* next char to caller */
             return (texchar(mctx, expression, subexpr));
-        else { /* --- kludge for super/subscripts to accommodate texscripts() --- */
+        else   /* --- kludge for super/subscripts to accommodate texscripts() --- */
+        {
             /* signal script */
             *subexpr++ = *expression;
             /* null-terminate subexpr */
@@ -496,18 +514,19 @@ char    *texsubexpr(mimetex_ctx *mctx, char *expression, char *subexpr, int maxs
     /* the left( in expression */
     *leftdelim  = *(expression + gotescape);
     if ((gotescape && *leftdelim == '.')         /* we have a left \. */
-            || (gotescape && isanyright)) {         /*or are matching any right*/
+            || (gotescape && isanyright))           /*or are matching any right*/
+    {
         /* so just set flag */
         isleftdot = 1;
         *leftdelim = '\000';
     }          /* and reset leftdelim */
     else
-    /* find matching \right */
+        /* find matching \right */
         if ((leftptr = strchr(left, *leftdelim)) != NULL) /* ptr to that left( */
             /* get the matching right) */
             *rightdelim = right[(int)(leftptr-left)];
         else
-        /* can't happen -- pgm bug */
+            /* can't happen -- pgm bug */
             /*just signal eoj to caller*/
             return (NULL);
     /* ------------------------------------------------------------
@@ -518,7 +537,8 @@ char    *texsubexpr(mimetex_ctx *mctx, char *expression, char *subexpr, int maxs
     if (isdelim)   *subexpr++ = *expression++;
     /* always bump past left{ */
     else expression++;
-    if (gotescape) {                 /*need to bump another char*/
+    if (gotescape)                   /*need to bump another char*/
+    {
         /* caller wants char, too */
         if (isdelim) *subexpr++ = *expression++;
         else expression++;
@@ -529,22 +549,27 @@ char    *texsubexpr(mimetex_ctx *mctx, char *expression, char *subexpr, int maxs
             /* set max arg size */
             maxsubsz = 96;
     /* --- search for matching right} --- */
-    while (1) {                  /*until balanced right} */
+    while (1)                    /*until balanced right} */
+    {
         /* --- error check for end-of-string --- */
-        if (*expression == '\000') {           /* premature end-of-string */
-            if (0 && (!isescape && !isdelim)) {    /*looking for numerical arg,*/
+        if (*expression == '\000')             /* premature end-of-string */
+        {
+            if (0 && (!isescape && !isdelim))      /*looking for numerical arg,*/
+            {
                 /* so end-of-string is error*/
                 expression = origexpression;
                 subexpr = origsubexpr;
             }      /* so reset all ptrs */
-            if (isdelim) {                 /* generate fake right */
-                if (gotescape) {         /* need escaped right */
+            if (isdelim)                   /* generate fake right */
+            {
+                if (gotescape)           /* need escaped right */
+                {
                     /* set escape char */
                     *subexpr++ = '\\';
                     *subexpr++ = '.';
                 }         /* and fake \right. */
                 else
-                /* escape not wanted */
+                    /* escape not wanted */
                     *subexpr++ = *rightdelim;
             }     /* so fake actual right */
             /* null-terminate subexpr */
@@ -560,16 +585,17 @@ char    *texsubexpr(mimetex_ctx *mctx, char *expression, char *subexpr, int maxs
         /* --- check for { and } (un/escaped as per leading left) --- */
         if (gotescape == prevescape)       /* escaped iff leading is */
         {
-        /* --- check for (closing) right delim and see if we're done --- */
+            /* --- check for (closing) right delim and see if we're done --- */
             if (isthischar(*expression, rightdelim)    /* found a right} */
                     || (isleftdot && isthischar(*expression, right))  /*\left. matches all*/
                     || (prevescape && isthischar(*expression, ".")))   /*or found \right. */
-                if (--nestlevel < 1) {           /*\right balances 1st \left*/
+                if (--nestlevel < 1)             /*\right balances 1st \left*/
+                {
                     if (isdelim)             /*caller wants } in subexpr*/
                         /* so end subexpr with } */
                         *subexpr++ = *expression;
                     else
-                    /*check for \ before right}*/
+                        /*check for \ before right}*/
                         if (prevescape)            /* have unwanted \ */
                             /* so replace it with null */
                             *(subexpr - 1) = '\000';
@@ -651,7 +677,8 @@ char    *texleft(mimetex_ctx *mctx, char *expression, char *subexpr, int maxsubs
     /* nothing after \left */
     if (*expression == '\000') goto end_of_job;
     /* --- determine left delimiter  --- */
-    if (ldelim != NULL) {            /* caller wants left delim */
+    if (ldelim != NULL)              /* caller wants left delim */
+    {
         /* interpret \left ( as \left( */
         skipwhite(expression);
         expression = texchar(mctx, expression, ldelim);
@@ -661,11 +688,13 @@ char    *texleft(mimetex_ctx *mctx, char *expression, char *subexpr, int maxsubs
     ------------------------------------------------------------ */
     /* --- first \right following \left --- */
     if ((pright = strtexchr(expression, right)) /* look for \right after \left */
-            !=   NULL) {                /* found it */
+            !=   NULL)                  /* found it */
+    {
         /* --- find matching \right by pushing past any nested \left's --- */
         /* start after first \left( */
         char *pleft = expression;
-        while (1) {                 /*break when matching \right found*/
+        while (1)                   /*break when matching \right found*/
+        {
             /* -- locate next nested \left if there is one --- */
             if ((pleft = strtexchr(pleft, left)) /* find next \left */
                     /*no more, so matching \right found*/
@@ -681,7 +710,8 @@ char    *texleft(mimetex_ctx *mctx, char *expression, char *subexpr, int maxsubs
         } /* --- end-of-while(1) --- */
     } /* --- end-of-if(pright!=NULL) --- */
     /* --- set subexpression length, push pright past \right --- */
-    if (pright != (char *)NULL) {        /* found matching \right */
+    if (pright != (char *)NULL)          /* found matching \right */
+    {
         /* #chars between \left...\right */
         sublen = (int)(pright - expression);
         pright += strlen(right);
@@ -690,15 +720,18 @@ char    *texleft(mimetex_ctx *mctx, char *expression, char *subexpr, int maxsubs
     get rightdelim and subexpr between \left...\right
     ------------------------------------------------------------ */
     /* --- get delimiter following \right --- */
-    if (rdelim != NULL) {            /* caller wants right delim */
-        if (pright == (char *)NULL) {       /* assume \right. at end of exprssn*/
+    if (rdelim != NULL)              /* caller wants right delim */
+    {
+        if (pright == (char *)NULL)         /* assume \right. at end of exprssn*/
+        {
             /* set default \right. */
             strcpy(rdelim, ".");
             /* use entire remaining expression */
             sublen = strlen(expression);
             pright = expression + sublen;
         } /* and push pright to end-of-string*/
-        else {                 /* have explicit matching \right */
+        else                   /* have explicit matching \right */
+        {
             /* interpret \right ) as \right) */
             skipwhite(pright);
             /* pull delim from expression */
@@ -708,7 +741,8 @@ char    *texleft(mimetex_ctx *mctx, char *expression, char *subexpr, int maxsubs
     } /* or set \right. */
     /* --- get subexpression between \left...\right --- */
     if (sublen > 0)              /* have subexpr */
-        if (subexpr != NULL) {          /* and caller wants it */
+        if (subexpr != NULL)            /* and caller wants it */
+        {
             /* max buffer size */
             if (maxsubsz > 0) sublen = min2(sublen, maxsubsz - 1);
             /* stuff between \left...\right */
@@ -716,7 +750,8 @@ char    *texleft(mimetex_ctx *mctx, char *expression, char *subexpr, int maxsubs
             subexpr[sublen] = '\000';
         }       /* null-terminate subexpr */
 end_of_job:
-    if (mctx->msglevel >= 99 && mctx->msgfp != NULL) {
+    if (mctx->msglevel >= 99 && mctx->msgfp != NULL)
+    {
         fprintf(mctx->msgfp, "texleft> ldelim=%s, rdelim=%s, subexpr=%.128s\n",
                 (ldelim == NULL ? "none" : ldelim), (rdelim == NULL ? "none" : rdelim),
                 (subexpr == NULL ? "none" : subexpr));
@@ -773,29 +808,34 @@ char    *texscripts(mimetex_ctx *mctx, char *expression, char *subscript,
     /* ------------------------------------------------------------
     get subscript and/or superscript from expression
     ------------------------------------------------------------ */
-    while (expression != NULL) {
+    while (expression != NULL)
+    {
         /* leading whitespace gone */
         skipwhite(expression);
         /* nothing left to scan */
         if (*expression == '\000') return(expression);
         if (isthischar(*expression, SUBSCRIPT) /* found _ */
-                && (which == 1 || which > 2)) {       /* and caller wants it */
+                && (which == 1 || which > 2))         /* and caller wants it */
+        {
             if (gotsub                 /* found 2nd subscript */
                     /* or no subscript buffer */
                     ||   subscript == NULL) break;
             /* set subscript flag */
             gotsub = 1;
             expression = texsubexpr(mctx, expression + 1, subscript, 0, "{", "}", 0, 0);
-        } else                     /* no _, check for ^ */
+        }
+        else                       /* no _, check for ^ */
             if (isthischar(*expression, SUPERSCRIPT) /* found ^ */
-                    &&   which >= 2) {              /* and caller wants it */
+                    &&   which >= 2)                /* and caller wants it */
+            {
                 if (gotsup               /* found 2nd superscript */
                         /* or no superscript buffer*/
                         ||   superscript == NULL) break;
                 /* set superscript flag */
                 gotsup = 1;
                 expression = texsubexpr(mctx, expression + 1, superscript, 0, "{", "}", 0, 0);
-            } else                   /* neither _ nor ^ */
+            }
+            else                     /* neither _ nor ^ */
                 /*return ptr past "scripts"*/
                 return (expression);
     } /* --- end-of-while(expression!=NULL) --- */
@@ -837,8 +877,8 @@ int isbrace(mimetex_ctx *mctx, char *expression, char *braces, int isescape)
     Allocations and Declarations
     ------------------------------------------------------------ */
     int gotescape = 0,      /* true if leading char is an escape */
-                    /*true if first non-escape char is a brace*/
-                    gotbrace = 0;
+        /*true if first non-escape char is a brace*/
+        gotbrace = 0;
     /* ------------------------------------------------------------
     check for brace
     ------------------------------------------------------------ */
@@ -847,7 +887,8 @@ int isbrace(mimetex_ctx *mctx, char *expression, char *braces, int isescape)
             /* have a \= ligature */
             ||   mctx->isligature) goto end_of_job;
     /* --- check leading char for escape --- */
-    if (isthischar(*expression, ESCAPE)) {       /* expression is escaped */
+    if (isthischar(*expression, ESCAPE))         /* expression is escaped */
+    {
         /* so set flag accordingly */
         gotescape = 1;
         expression++;
@@ -867,7 +908,8 @@ int isbrace(mimetex_ctx *mctx, char *expression, char *braces, int isescape)
     back to caller
     ------------------------------------------------------------ */
 end_of_job:
-    if (mctx->msglevel >= 999 && mctx->msgfp != NULL) {
+    if (mctx->msglevel >= 999 && mctx->msgfp != NULL)
+    {
         fprintf(mctx->msgfp, "isbrace> expression=%.8s, gotbrace=%d (mctx->isligature=%d)\n",
                 expression, gotbrace, mctx->isligature);
         fflush(mctx->msgfp);
@@ -912,13 +954,13 @@ char    *preamble(mimetex_ctx *mctx, char *expression, int *size, char *subexpr)
     Allocations and Declarations
     ------------------------------------------------------------ */
     char    pretext[512], *prep = expression, /*pream from expression, ptr into it*/
-                                  /* preamble delimiters */
-                                  *dollar, *comma;
+                           /* preamble delimiters */
+                           *dollar, *comma;
     int prelen = 0,         /* preamble length */
-                 sizevalue = 0,          /* value of size parameter */
-                             isfontsize = 0,         /*true if leading mctx->fontsize present*/
-                                          /*true to increment passed size arg*/
-                                          isdelta = 0;
+        sizevalue = 0,          /* value of size parameter */
+        isfontsize = 0,         /*true if leading mctx->fontsize present*/
+        /*true to increment passed size arg*/
+        isdelta = 0;
     /* ------------------------------------------------------------
     initialization
     ------------------------------------------------------------ */
@@ -934,16 +976,20 @@ char    *preamble(mimetex_ctx *mctx, char *expression, int *size, char *subexpr)
     ------------------------------------------------------------ */
     /*process_preamble:*/
     if ((dollar = strchr(expression, '$')) /* $ signals preceding preamble */
-            !=   NULL) {                /* found embedded $ */
+            !=   NULL)                  /* found embedded $ */
+    {
         if ((prelen = (int)(dollar - expression)) /*#chars in expression preceding $*/
-                > 0) {                 /* must have preamble preceding $ */
-            if (prelen < 65) {             /* too long for a prefix */
+                > 0)                   /* must have preamble preceding $ */
+        {
+            if (prelen < 65)               /* too long for a prefix */
+            {
                 /* local copy of preamble */
                 memcpy(pretext, expression, prelen);
                 /* null-terminated */
                 pretext[prelen] = '\000';
                 if (strchr(pretext, *(ESCAPE)) == NULL  /*shouldn't be an escape in preamble*/
-                        &&   strchr(pretext, '{') == NULL) { /*shouldn't be a left{ in preamble*/
+                        &&   strchr(pretext, '{') == NULL)   /*shouldn't be a left{ in preamble*/
+                {
                     /* --- skip any leading whitespace  --- */
                     /* start at beginning of preamble */
                     prep = pretext;
@@ -957,7 +1003,8 @@ char    *preamble(mimetex_ctx *mctx, char *expression, int *size, char *subexpr)
                     comma = strchr(pretext, ',');
                     /* --- process leading size parameter if present --- */
                     if (comma != NULL            /* size param explicitly signalled */
-                            ||   isdelta || isdigit(*prep)) {   /* or inferred implicitly */
+                            ||   isdelta || isdigit(*prep))     /* or inferred implicitly */
+                    {
                         /* --- parse size parameter and reset size accordingly --- */
                         /*, becomes null, terminating size*/
                         if (comma != NULL) *comma = '\000';
@@ -983,12 +1030,14 @@ char    *preamble(mimetex_ctx *mctx, char *expression, int *size, char *subexpr)
                 } /* --- end-of-if(strchr(pretext,*ESCAPE)==NULL) --- */
             } /* --- end-of-if(prelen<65) --- */
         } /* --- end-of-if(prelen>0) --- */
-        else {                 /* $ is first char of expression */
+        else                   /* $ is first char of expression */
+        {
             /* number of $...$ pairs removed */
             int ndollars = 0;
             /* start at beginning of expression*/
             prep = expression;
-            while (*prep == '$') {         /* remove all matching $...$'s */
+            while (*prep == '$')           /* remove all matching $...$'s */
+            {
                 /* index of last char in expression*/
                 int  explen = strlen(prep) - 1;
                 /* no $...$'s left to remove */
@@ -1046,9 +1095,9 @@ char *mimeprep(mimetex_ctx *mctx, char *expression)
     Allocations and Declarations
     ------------------------------------------------------------ */
     char    *expptr = expression,   /* ptr within expression */
-                      *tokptr = NULL,         /*ptr to token found in expression*/
-                                /*parse for macro args after token*/
-                                *texsubexpr(), argval[8192];
+             *tokptr = NULL,         /*ptr to token found in expression*/
+              /*parse for macro args after token*/
+              *texsubexpr(), argval[8192];
     /* change leading chars of string */
     char    *strchange();
     /* replace nnn with actual num, etc*/
@@ -1058,8 +1107,8 @@ char *mimeprep(mimetex_ctx *mctx, char *expression)
     /*find left { and right } for \atop*/
     char    *findbraces();
     int idelim = 0,         /* left- or right-index */
-                 /*symbols[],rightcomment[],etc index*/
-                 isymbol = 0;
+        /*symbols[],rightcomment[],etc index*/
+        isymbol = 0;
     /* true to xlate \left and \right */
     int xlateleft = 0;
     /* ---
@@ -1068,12 +1117,13 @@ char *mimeprep(mimetex_ctx *mctx, char *expression)
     /* find leftcomment in expression */
     char    *leftptr = NULL;
     static  char *leftcomment = "%%",   /* open comment */
-                 *rightcomment[] = {"\n", "%%", NULL}; /* close comments */
+                  *rightcomment[] = {"\n", "%%", NULL}; /* close comments */
     /* ---
      * special long (more than 1-char) \left and \right delimiters
      * ------------------------------------------------------------ */
     /* xlate any \left suffix... */
-    static  char *leftfrom[] = {
+    static  char *leftfrom[] =
+    {
         "\\|",/* \left\| */
         "\\{", /* \left\{ */
         "\\langle", /* \left\langle */
@@ -1081,21 +1131,24 @@ char *mimeprep(mimetex_ctx *mctx, char *expression)
     }; /* --- end-of-leftfrom[] --- */
 
     /* ...to this instead */
-    static  char *leftto[] = {
+    static  char *leftto[] =
+    {
         "=", /* = */
         "{", /* { */
         "<", /* < */
         NULL
     }; /* --- end-of-leftto[] --- */
     /* xlate any \right suffix... */
-    static  char *rightfrom[] = {
+    static  char *rightfrom[] =
+    {
         "\\|", /* \right\| */
         "\\}", /* \right\} */
         "\\rangle", /* \right\rangle */
         NULL
     }; /* --- end-of-rightfrom[] --- */
     /* ...to this instead */
-    static  char *rightto[] = {
+    static  char *rightto[] =
+    {
         "=", /* = */
         "}", /* } */
         ">", /* > */
@@ -1107,7 +1160,8 @@ char *mimeprep(mimetex_ctx *mctx, char *expression)
     /* atopcommands[isymbol] */
     char    *atopsym = NULL;
     /* list of {a+b\command c+d}'s */
-    static  char *atopcommands[] = {
+    static  char *atopcommands[] =
+    {
         "\\over", /* plain tex for \frac */
         "\\choose", /* binomial coefficient */
 #ifndef NOATOP
@@ -1116,7 +1170,8 @@ char *mimeprep(mimetex_ctx *mctx, char *expression)
         NULL
     }; /* --- end-of-atopcommands[] --- */
     /* delims for atopcommands[] */
-    static  char *atopdelims[] = {
+    static  char *atopdelims[] =
+    {
         NULL, NULL, /* \\over has no delims */
         "\\left(", "\\right)",     /* \\choose has ( ) delims*/
 #ifndef NOATOP           /*noatop preserves old mimeTeX rule*/
@@ -1130,15 +1185,17 @@ char *mimeprep(mimetex_ctx *mctx, char *expression)
      * ------------------------------------------------------------ */
     /* symbols[isymbol].html */
     char    *htmlsym = NULL;
-    static  struct {
+    static  struct
+    {
         char *html;
         char *args;
         char *latex;
-    } symbols[] = {
+    } symbols[] =
+    {
 #ifdef NEWCOMMANDS           /* -DNEWCOMMANDS=\"filename.h\" */
-    /* ------------------------------------------------------------
-     user-supplied newcommands
-    ------------------------------------------------------------ */
+        /* ------------------------------------------------------------
+         user-supplied newcommands
+        ------------------------------------------------------------ */
 #   include NEWCOMMANDS
 #endif
         /* ------------------------------------------------------------
@@ -1153,9 +1210,9 @@ char *mimeprep(mimetex_ctx *mctx, char *expression)
         },
         {
             "\\copyright", NULL,
-           "{\\small\\red\\text \\fbox{\\begin{gather}"
-           "mimeTeX \\copyrighttext \\\\"
-           "see \\homepagetext for details \\end{gather}}}"
+            "{\\small\\red\\text \\fbox{\\begin{gather}"
+            "mimeTeX \\copyrighttext \\\\"
+            "see \\homepagetext for details \\end{gather}}}"
         },
         { "\\versionnumber", NULL, "{\\text" VERSION "}" },
         { "\\revisiondate",  NULL, "{\\text" REVISIONDATE "}" },
@@ -1165,7 +1222,7 @@ char *mimeprep(mimetex_ctx *mctx, char *expression)
         },
         {
             "\\homepagetext",  NULL,
-           "{\\text http://www.forkosh.com/mimetex.html}"
+            "{\\text http://www.forkosh.com/mimetex.html}"
         },
         /* ------------------------------------------------------------
         Cyrillic  termchar  mimeTeX equivalent...
@@ -1302,11 +1359,13 @@ char *mimeprep(mimetex_ctx *mctx, char *expression)
     int htmlnum = 0;
     /* ------------------------------------------------------------
     html num  LaTeX equivalent...
-   ------------------------------------------------------------ */
-    static  struct {
+    ------------------------------------------------------------ */
+    static  struct
+    {
         int html;
         char *latex;
-    } numbers[] = {
+    } numbers[] =
+    {
         { 9,     " " },          /* horizontal tab */
         { 10,    " " },          /* line feed */
         { 13,    " " },          /* carriage return */
@@ -1355,7 +1414,8 @@ char *mimeprep(mimetex_ctx *mctx, char *expression)
     ------------------------------------------------------------ */
     /* start search at beginning */
     expptr = expression;
-    while ((leftptr = strstr(expptr, leftcomment)) != NULL) {
+    while ((leftptr = strstr(expptr, leftcomment)) != NULL)
+    {
         /*found leftcomment*/
         /* rightcomment[isymbol] */
         char  *rightsym = NULL;
@@ -1364,10 +1424,12 @@ char *mimeprep(mimetex_ctx *mctx, char *expression)
         /* --- check for any closing rightcomment, in given precedent order --- */
         if (*expptr != '\000')         /*have chars after this leftcomment*/
             for (isymbol = 0; (rightsym = rightcomment[isymbol]) != NULL; isymbol++)
-                if ((tokptr = strstr(expptr, rightsym)) != NULL) { /*found rightcomment*/
+                if ((tokptr = strstr(expptr, rightsym)) != NULL)   /*found rightcomment*/
+                {
                     /* first char after rightcomment */
                     tokptr += strlen(rightsym);
-                    if (*tokptr == '\000') {      /*nothing after this rightcomment*/
+                    if (*tokptr == '\000')        /*nothing after this rightcomment*/
+                    {
                         /*so terminate expr at leftcomment*/
                         *leftptr = '\000';
                         break;
@@ -1391,7 +1453,8 @@ next_comment:
     /* ------------------------------------------------------------
     run thru table, converting all occurrences of each macro to its expansion
     ------------------------------------------------------------ */
-    for (isymbol = 0; (htmlsym = symbols[isymbol].html) != NULL; isymbol++) {
+    for (isymbol = 0; (htmlsym = symbols[isymbol].html) != NULL; isymbol++)
+    {
         /* length of escape, _without_ ; */
         int   htmllen = strlen(htmlsym);
         /* leading char alphabetic */
@@ -1403,13 +1466,13 @@ next_comment:
         /*left,right delims for alg syntax*/
         char  *aleft = "{([<|", *aright = "})]>|";
         char  embedkeywd[99] = "embed",   /* keyword to signal embedded token*/
-              embedterm = '\000'; /* char immediately after embed */
+                               embedterm = '\000'; /* char immediately after embed */
         /* #chars in embedkeywd */
         int   embedlen = strlen(embedkeywd);
         char  *args = symbols[isymbol].args,  /* number {}-args, optional []-arg */
-              *htmlterm = args,       /*if *args nonumeric, then html term*/
-              *latexsym = symbols[isymbol].latex, /*latex replacement for htmlsym*/
-              errorsym[256]; /*or latexsym may point to error msg*/
+               *htmlterm = args,       /*if *args nonumeric, then html term*/
+                *latexsym = symbols[isymbol].latex, /*latex replacement for htmlsym*/
+                 errorsym[256]; /*or latexsym may point to error msg*/
         char  abuff[8192];
         /* macro expansion params */
         int iarg, nargs = 0;
@@ -1424,8 +1487,10 @@ next_comment:
         /* html &char; starts with & */
         isamp = (isthischar(*htmlsym, "&") ? 1 : 0);
         if (args != NULL)              /*we have args (or htmlterm) param*/
-            if (*args != '\000') {        /* and it's not an empty string */
-                if (strchr("0123456789", *args) != NULL) { /* is 1st char #args=0-9 ? */
+            if (*args != '\000')          /* and it's not an empty string */
+            {
+                if (strchr("0123456789", *args) != NULL)   /* is 1st char #args=0-9 ? */
+                {
                     /* if so, then we have no htmlterm */
                     htmlterm = NULL;
                     *abuff = *args;
@@ -1433,7 +1498,8 @@ next_comment:
                     abuff[1] = '\000';
                     nargs = atoi(abuff);
                 }       /* interpret #args to numeric */
-                else if (strncmp(args, embedkeywd, embedlen) == 0) { /*xlate embedded token*/
+                else if (strncmp(args, embedkeywd, embedlen) == 0)   /*xlate embedded token*/
+                {
                     /* length of "embed..." string */
                     int arglen = strlen(args);
                     /* if so, then we have no htmlterm */
@@ -1443,7 +1509,8 @@ next_comment:
                     if (arglen > embedlen)        /* have embed "allow escape" flag */
                         /* char immediately after "embed" */
                         embedterm = args[embedlen];
-                    if (arglen > embedlen + 1) { /* have embed,flag,white for strwstr*/
+                    if (arglen > embedlen + 1)   /* have embed,flag,white for strwstr*/
+                    {
                         /* turn on strwtsr flag */
                         isstrwstr = 1;
                         strcpy(wstrwhite, args + embedlen + 1);
@@ -1453,7 +1520,8 @@ next_comment:
         /* re-start search at beginning */
         expptr = expression;
         while ((tokptr = (!isstrwstr ? strstr(expptr, htmlsym) : /* just use strtsr */
-                    strwstr(mctx, expptr, htmlsym, wstrwhite, &wstrlen))) /* or use our strwstr */ != NULL) {                /* found another sym */
+                          strwstr(mctx, expptr, htmlsym, wstrwhite, &wstrlen))) /* or use our strwstr */ != NULL)                  /* found another sym */
+        {
             /* length of matched sym */
             int  toklen = (!isstrwstr ? htmllen : wstrlen);
             char termchar = *(tokptr + toklen), /* char terminating html sequence */
@@ -1465,10 +1533,12 @@ next_comment:
             /* true to flush (don't xlate) */
             int  isflush = 0;
             /* --- check odd/even backslashes preceding tokens --- */
-            if (isescaped) {       /* have one preceding backslash */
+            if (isescaped)         /* have one preceding backslash */
+            {
                 /* ptr to that preceding backslash */
                 char *p = tokptr - 1;
-                while (p != expptr) {
+                while (p != expptr)
+                {
                     /* and we may have more preceding */
                     p--;
                     /* but we don't, so quit */
@@ -1488,7 +1558,8 @@ next_comment:
                     /*add terminator*/
                     escapelen += (isthischar(termchar, htmlterm) ? 1 : 0);
             /* --- don't xlate if we just found prefix of longer symbol, etc --- */
-            if (!isembedded) {         /* not embedded */
+            if (!isembedded)           /* not embedded */
+            {
                 if (isescaped)       /* escaped */
                     /* set flag to flush escaped token */
                     isflush = 1;
@@ -1504,19 +1575,22 @@ next_comment:
                     if (!isthischar(embedterm, ESCAPE))  /* don't xlate escaped \token */
                         /* set flag to flush token */
                         isflush = 1;
-            if (isflush) {         /* don't xlate this token */
+            if (isflush)           /* don't xlate this token */
+            {
                 /*toklen;*/
                 expptr = tokptr + 1;/* just resume search after token */
                 continue;
             }           /* but don't replace it */
             /* --- check for &# prefix signalling &#nnn; --- */
-            if (strcmp(htmlsym, "&#") == 0) {  /* replacing special &#nnn; chars */
+            if (strcmp(htmlsym, "&#") == 0)    /* replacing special &#nnn; chars */
+            {
                 /* --- accumulate chars comprising number following &# --- */
                 /* chars comprising number after &# */
                 char anum[32];
                 /* no chars accumulated yet */
                 int  inum = 0;
-                while (termchar != '\000') {      /* don't go past end-of-string */
+                while (termchar != '\000')        /* don't go past end-of-string */
+                {
                     /* and don't go past digits */
                     if (!isdigit((int)termchar)) break;
                     /* some syntax error in expression */
@@ -1545,7 +1619,8 @@ next_comment:
                 /*place actual &#num in message*/
                 strreplace(latexsym, "nnn", anum, 1);
                 for (inum = 0; numbers[inum].html >= 0; inum++) /* run thru numbers[] */
-                    if (htmlnum ==  numbers[inum].html) {   /* till we find a match */
+                    if (htmlnum ==  numbers[inum].html)     /* till we find a match */
+                    {
                         /* latex replacement */
                         latexsym = numbers[inum].latex;
                         break;
@@ -1556,37 +1631,45 @@ next_comment:
                         strcpy(abuff, latexsym);
             } /* --- end-of-if(strcmp(htmlsym,"&#")==0) --- */
             /* --- substitute macro arguments --- */
-            if (nargs > 0) {           /*substitute #1,#2,... in latexsym*/
+            if (nargs > 0)             /*substitute #1,#2,... in latexsym*/
+            {
                 /* nargs begin after macro literal */
                 char *arg1ptr = tokptr + escapelen;
                 /* ptr 1 char past #args digit 0-9 */
                 char *optarg = args + 1;
                 /* ptr to beginning of next arg */
                 expptr = arg1ptr;
-                for (iarg = 1; iarg <= nargs; iarg++) { /* one #`iarg` arg at a time */
+                for (iarg = 1; iarg <= nargs; iarg++)   /* one #`iarg` arg at a time */
+                {
                     char argsignal[32] = "#1",  /* #1...#9 signals arg replacement */
-                         *argsigptr = NULL; /* ptr to argsignal in abuff[] */
+                                         *argsigptr = NULL; /* ptr to argsignal in abuff[] */
                     /* --- get argument value --- */
                     /* init arg as empty string */
                     *argval = '\000';
                     /* and skip leading white space */
                     skipwhite(expptr);
                     if (iarg == 1 && *optarg != '\000'  /* check for optional [arg] */
-                            &&   !isalgebra) {      /* but not in "algebra syntax" */
+                            &&   !isalgebra)        /* but not in "algebra syntax" */
+                    {
                         /* init with default value */
                         strcpy(argval, optarg);
                         if (*expptr == '[')   /* but user gave us [argval] */
                             /*so get it*/
                             expptr = texsubexpr(mctx, expptr, argval, 0, "[", "]", 0, 0);
-                    } else { /* not optional, so get {argval} */
-                        if (*expptr != '\000') {    /* check that some argval provided */
+                    }
+                    else     /* not optional, so get {argval} */
+                    {
+                        if (*expptr != '\000')      /* check that some argval provided */
+                        {
                             if (!isalgebra)       /* only { } delims for latex macro */
                                 /*get {argval}*/
                                 expptr = texsubexpr(mctx, expptr, argval, 0, "{", "}", 0, 0);
-                            else {           /*any delim for algebra syntax macro*/
+                            else             /*any delim for algebra syntax macro*/
+                            {
                                 expptr = texsubexpr(mctx, expptr, argval, 0, aleft, aright, 0, 1);
                                 if (isthischar(*argval, aleft))  /* have delim-enclosed arg */
-                                    if (*argval != '{') {     /* and it's not { }-enclosed */
+                                    if (*argval != '{')       /* and it's not { }-enclosed */
+                                    {
                                         /* insert opening \left, */
                                         strchange(0, argval, "\\left");
                                         strchange(0, argval + strlen(argval) - 1, "\\right");
@@ -1619,33 +1702,40 @@ next_comment:
     /* ------------------------------------------------------------
     convert \left( to \(  and  \right) to \),  etc.
     ------------------------------------------------------------ */
-    if (xlateleft) {
+    if (xlateleft)
+    {
         /* \left...\right xlation wanted */
-        for (idelim = 0; idelim < 2; idelim++) { /* 0 for \left  and  1 for \right */
+        for (idelim = 0; idelim < 2; idelim++)   /* 0 for \left  and  1 for \right */
+        {
             /* \left on 1st pass */
             char  *lrstr  = (idelim == 0 ? "\\left" : "\\right");
             /* strlen() of \left or \right */
             int   lrlen   = (idelim == 0 ? 5 : 6);
             char  *braces = (idelim == 0 ? LEFTBRACES "." : RIGHTBRACES "."), /*([{<or)]}>*/
-                            **lrfrom = (idelim == 0 ? leftfrom : rightfrom), /* long braces like \| */
-                                       **lrto  = (idelim == 0 ? leftto : rightto), /* xlated to 1-char like = */
-                                                 /* lrfrom[isymbol] */
-                                                 *lrsym  = NULL;
+                   **lrfrom = (idelim == 0 ? leftfrom : rightfrom), /* long braces like \| */
+                     **lrto  = (idelim == 0 ? leftto : rightto), /* xlated to 1-char like = */
+                       /* lrfrom[isymbol] */
+                       *lrsym  = NULL;
             /* start search at beginning */
             expptr = expression;
-            while ((tokptr = strstr(expptr, lrstr)) != NULL) { /* found \left or \right */
-                if (isthischar(*(tokptr + lrlen), braces)) { /* followed by a 1-char brace*/
+            while ((tokptr = strstr(expptr, lrstr)) != NULL)   /* found \left or \right */
+            {
+                if (isthischar(*(tokptr + lrlen), braces))   /* followed by a 1-char brace*/
+                {
                     /* so squeeze out "left" or "right"*/
                     strcpy(tokptr + 1, tokptr + lrlen);
                     expptr = tokptr + 2;
                 }        /* and resume search past brace */
-                else {              /* may be a "long" brace like \| */
+                else                /* may be a "long" brace like \| */
+                {
                     /*init to resume search past\left\rt*/
                     expptr = tokptr + lrlen;
-                    for (isymbol = 0; (lrsym = lrfrom[isymbol]) != NULL; isymbol++) {
+                    for (isymbol = 0; (lrsym = lrfrom[isymbol]) != NULL; isymbol++)
+                    {
                         /* #chars in delim, e.g., 2 for \| */
                         int symlen = strlen(lrsym);
-                        if (memcmp(tokptr + lrlen, lrsym, symlen) == 0) { /* found long delim*/
+                        if (memcmp(tokptr + lrlen, lrsym, symlen) == 0)   /* found long delim*/
+                        {
                             /* squeeze out delim */
                             strcpy(tokptr + 1, tokptr + lrlen + symlen - 1);
                             /* last char now 1-char delim*/
@@ -1662,22 +1752,26 @@ next_comment:
     /* ------------------------------------------------------------
     run thru table, converting all {a+b\atop c+d} to \atop{a+b}{c+d}
     ------------------------------------------------------------ */
-    for (isymbol = 0; (atopsym = atopcommands[isymbol]) != NULL; isymbol++) {
+    for (isymbol = 0; (atopsym = atopcommands[isymbol]) != NULL; isymbol++)
+    {
         /* #chars in \atop */
         int   atoplen = strlen(atopsym);
         /* re-start search at beginning */
         expptr = expression;
-        while ((tokptr = strstr(expptr, atopsym)) != NULL) { /* found another atop */
+        while ((tokptr = strstr(expptr, atopsym)) != NULL)   /* found another atop */
+        {
             /*ptr to opening {, closing }*/
             char *leftbrace = NULL, *rightbrace = NULL;
             /* \atop followed by terminator */
             char termchar = *(tokptr + atoplen);
-            if (mctx->msgfp != NULL && mctx->msglevel >= 999) {
+            if (mctx->msgfp != NULL && mctx->msglevel >= 999)
+            {
                 fprintf(mctx->msgfp, "mimeprep> offset=%d rhs=\"%s\"\n",
                         (int)(tokptr - expression), tokptr);
                 fflush(mctx->msgfp);
             }
-            if (isalpha((int)termchar)) {  /*we just have prefix of longer sym*/
+            if (isalpha((int)termchar))    /*we just have prefix of longer sym*/
+            {
                 /* just resume search after prefix */
                 expptr = tokptr + atoplen;
                 continue;
@@ -1686,11 +1780,14 @@ next_comment:
             leftbrace  = findbraces(expression, tokptr);
             /* find right } */
             rightbrace = findbraces(NULL, tokptr + atoplen - 1);
-            if (leftbrace == NULL || rightbrace == NULL) {
+            if (leftbrace == NULL || rightbrace == NULL)
+            {
                 /* skip command if didn't find */
                 expptr += atoplen;
                 continue;
-            } else {           /* we have bracketed { \atop } */
+            }
+            else               /* we have bracketed { \atop } */
+            {
                 int  leftlen  = (int)(tokptr - leftbrace) - 1, /* #chars in left arg */
                      rightlen = (int)(rightbrace - tokptr) - atoplen, /* and in right*/
                      totlen   = (int)(rightbrace - leftbrace) + 1; /*tot in { \atop }*/
@@ -1735,7 +1832,8 @@ next_comment:
     /* ------------------------------------------------------------
     back to caller with preprocessed expression
     ------------------------------------------------------------ */
-    if (mctx->msgfp != NULL && mctx->msglevel >= 99) { /* display preprocessed expression */
+    if (mctx->msgfp != NULL && mctx->msglevel >= 99)   /* display preprocessed expression */
+    {
         fprintf(mctx->msgfp, "mimeprep> expression=\"\"%s\"\"\n", expression);
         fflush(mctx->msgfp);
     }

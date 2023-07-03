@@ -42,11 +42,12 @@
 #define HASH(index, lastbyte) (((lastbyte << 8) ^ index) % HASHSIZE)
 
 #if !defined(MAXGIFSZ)		/* " */
-  #define MAXGIFSZ 131072	/* " max #bytes comprising gif image */
+#define MAXGIFSZ 131072	/* " max #bytes comprising gif image */
 #endif				/* " */
 
 /* used in the main routines */
-typedef struct {
+typedef struct
+{
     Word LocalScreenWidth,
          LocalScreenHeight;
     Byte GlobalColorTableSize : 3,
@@ -57,7 +58,8 @@ typedef struct {
     Byte PixelAspectRatio;
 } ScreenDescriptor;
 
-typedef struct {
+typedef struct
+{
     Byte Separator;
     Word LeftPosition,
          TopPosition;
@@ -70,7 +72,8 @@ typedef struct {
          LocalColorTableFlag : 1;
 } ImageDescriptor;
 
-typedef struct {
+typedef struct
+{
     Word ImageHeight,
          ImageWidth,
          ImageLeft,
@@ -107,11 +110,15 @@ static int
 Write(GIFContext *ctx, const void *buf, unsigned len)
 {
     if ( ctx->OutBuffer == NULL )			/* (added by j.forkosh) */
-      {	if (fwrite(buf, sizeof(Byte), len, ctx->OutFile) < len)
-	  return GIF_ERRWRITE; }
+    {
+        if (fwrite(buf, sizeof(Byte), len, ctx->OutFile) < len)
+            return GIF_ERRWRITE;
+    }
     else					/* (added by j.forkosh) */
-      {	if ( ctx->gifSize + len <= ctx->maxgifSize )	/* " */
-	  memcpy(ctx->OutBuffer + ctx->gifSize, buf, len); }	/* " */
+    {
+        if ( ctx->gifSize + len <= ctx->maxgifSize )	/* " */
+            memcpy(ctx->OutBuffer + ctx->gifSize, buf, len);
+    }	/* " */
     ctx->gifSize += len;				/* " */
     return GIF_OK;
 }
@@ -133,11 +140,15 @@ static int
 WriteByte(GIFContext *ctx, Byte b)
 {
     if ( ctx->OutBuffer == NULL )			/* (added by j.forkosh) */
-      {	if (putc(b, ctx->OutFile) == EOF)
-	  return GIF_ERRWRITE; }
+    {
+        if (putc(b, ctx->OutFile) == EOF)
+            return GIF_ERRWRITE;
+    }
     else					/* (added by j.forkosh) */
-      {	if ( ctx->gifSize < ctx->maxgifSize )		/* " */
-	  ctx->OutBuffer[ctx->gifSize] = b; }		/* " */
+    {
+        if ( ctx->gifSize < ctx->maxgifSize )		/* " */
+            ctx->OutBuffer[ctx->gifSize] = b;
+    }		/* " */
     ctx->gifSize++;					/* " */
     return GIF_OK;
 }
@@ -160,14 +171,18 @@ static int
 WriteWord(GIFContext *ctx, Word w)
 {
     if ( ctx->OutBuffer == NULL )			/* (added by j.forkosh) */
-      {	if (putc(w & 0xFF, ctx->OutFile) == EOF)
-	  return GIF_ERRWRITE;
-	if (putc((w >> 8), ctx->OutFile) == EOF)
-	  return GIF_ERRWRITE; }
+    {
+        if (putc(w & 0xFF, ctx->OutFile) == EOF)
+            return GIF_ERRWRITE;
+        if (putc((w >> 8), ctx->OutFile) == EOF)
+            return GIF_ERRWRITE;
+    }
     else					/* (added by j.forkosh) */
-      if ( ctx->gifSize+1 < ctx->maxgifSize )		/* " */
-	{ ctx->OutBuffer[ctx->gifSize] = (Byte)(w & 0xFF);  /* " */
-	  ctx->OutBuffer[ctx->gifSize+1] = (Byte)(w >> 8); }  /* " */
+        if ( ctx->gifSize+1 < ctx->maxgifSize )		/* " */
+        {
+            ctx->OutBuffer[ctx->gifSize] = (Byte)(w & 0xFF);  /* " */
+            ctx->OutBuffer[ctx->gifSize+1] = (Byte)(w >> 8);
+        }  /* " */
     ctx->gifSize += 2;				/* " */
     return GIF_OK;
 }
@@ -184,7 +199,7 @@ static void
 Close(GIFContext *ctx)
 {
     if ( ctx->OutFile )			/* (added by j.forkosh) */
-      fclose(ctx->OutFile);
+        fclose(ctx->OutFile);
     ctx->OutBuffer = NULL;				/* (added by j.forkosh) */
     ctx->OutFile = NULL;				/* " */
 }
@@ -232,7 +247,8 @@ ResetOutBitFile(GIFContext *ctx)
     numbytes = ctx->Index + (ctx->BitsLeft == 8 ? 0 : 1);
 
     /* write whatever is in the buffer to the file */
-    if (numbytes) {
+    if (numbytes)
+    {
         if (WriteByte(ctx, numbytes) != GIF_OK)
             return -1;
 
@@ -265,9 +281,11 @@ WriteBits(GIFContext *ctx, int bits, int numbits)
     int  bitswritten = 0;
     Byte numbytes = 255;
 
-    do {
+    do
+    {
         /* if the buffer is full, write it */
-        if ((ctx->Index == 254 && !ctx->BitsLeft) || ctx->Index > 254) {
+        if ((ctx->Index == 254 && !ctx->BitsLeft) || ctx->Index > 254)
+        {
             if (WriteByte(ctx, numbytes) != GIF_OK)
                 return -1;
 
@@ -279,12 +297,15 @@ WriteBits(GIFContext *ctx, int bits, int numbits)
         }
 
         /* now take care of the two specialcases */
-        if (numbits <= ctx->BitsLeft) {
+        if (numbits <= ctx->BitsLeft)
+        {
             ctx->Buffer[ctx->Index] |= (bits & ((1 << numbits) - 1)) << (8 - ctx->BitsLeft);
             bitswritten += numbits;
             ctx->BitsLeft -= numbits;
             numbits = 0;
-        } else {
+        }
+        else
+        {
             ctx->Buffer[ctx->Index] |= (bits & ((1 << ctx->BitsLeft) - 1)) << (8 - ctx->BitsLeft);
             bitswritten += ctx->BitsLeft;
             bits >>= ctx->BitsLeft;
@@ -293,7 +314,8 @@ WriteBits(GIFContext *ctx, int bits, int numbits)
             ctx->Buffer[++ctx->Index] = 0;
             ctx->BitsLeft = 8;
         }
-    } while (numbits);
+    }
+    while (numbits);
 
     return bitswritten;
 }
@@ -313,15 +335,18 @@ WriteBits(GIFContext *ctx, int bits, int numbits)
 static void
 FreeStrtab(GIFContext *ctx)
 {
-    if (ctx->StrHsh) {
+    if (ctx->StrHsh)
+    {
         free(ctx->StrHsh);
         ctx->StrHsh = NULL;
     }
-    if (ctx->StrNxt) {
+    if (ctx->StrNxt)
+    {
         free(ctx->StrNxt);
         ctx->StrNxt = NULL;
     }
-    if (ctx->StrChr) {
+    if (ctx->StrChr)
+    {
         free(ctx->StrChr);
         ctx->StrChr = NULL;
     }
@@ -344,15 +369,18 @@ AllocStrtab(GIFContext *ctx)
     /* just in case */
     FreeStrtab(ctx);
 
-    if ((ctx->StrChr = (Byte *) malloc(MAXSTR * sizeof(Byte))) == 0) {
+    if ((ctx->StrChr = (Byte *) malloc(MAXSTR * sizeof(Byte))) == 0)
+    {
         FreeStrtab(ctx);
         return GIF_OUTMEM;
     }
-    if ((ctx->StrNxt = (Word *) malloc(MAXSTR * sizeof(Word))) == 0) {
+    if ((ctx->StrNxt = (Word *) malloc(MAXSTR * sizeof(Word))) == 0)
+    {
         FreeStrtab(ctx);
         return GIF_OUTMEM;
     }
-    if ((ctx->StrHsh = (Word *) malloc(HASHSIZE * sizeof(Word))) == 0) {
+    if ((ctx->StrHsh = (Word *) malloc(HASHSIZE * sizeof(Word))) == 0)
+    {
         FreeStrtab(ctx);
         return GIF_OUTMEM;
     }
@@ -431,7 +459,8 @@ FindCharString(GIFContext *ctx, Word index, Byte b)
     /* search the string table until the string is found, or we find
      * HASH_FREE. in that case the string does not exist. */
     hshidx = HASH(index, b);
-    while ((nxtidx = ctx->StrHsh[hshidx]) != 0xFFFF) {
+    while ((nxtidx = ctx->StrHsh[hshidx]) != 0xFFFF)
+    {
         if (ctx->StrNxt[nxtidx] == index && ctx->StrChr[nxtidx] == b)
             return nxtidx;
         hshidx = (hshidx + HASHSTEP) % HASHSIZE;
@@ -523,22 +552,28 @@ LZW_Compress(GIFContext *ctx, int codesize, int (*inputbyte)(void*), void *ibctx
     WriteBits(ctx, clearcode, numbits);
 
     /* pack image */
-    while ((c = inputbyte(ibctx)) != -1) {
+    while ((c = inputbyte(ibctx)) != -1)
+    {
         /* now perform the packing. check if the prefix + the new
          *  character is a string that exists in the table */
-        if ((index = FindCharString(ctx, prefix, c)) != 0xFFFF) {
+        if ((index = FindCharString(ctx, prefix, c)) != 0xFFFF)
+        {
             /* the string exists in the table. make this string the
              * new prefix.  */
             prefix = index;
-        } else {
+        }
+        else
+        {
             /* the string does not exist in the table. first write
              * code of the old prefix to the file. */
             WriteBits(ctx, prefix, numbits);
 
             /* add the new string (the prefix + the new character) to
              * the stringtable */
-            if (AddCharString(ctx, prefix, c) > limit) {
-                if (++numbits > 12) {
+            if (AddCharString(ctx, prefix, c) > limit)
+            {
+                if (++numbits > 12)
+                {
                     WriteBits(ctx, clearcode, numbits - 1);
                     ClearStrtab(ctx, codesize);
                     numbits = codesize + 1;
@@ -614,7 +649,8 @@ InputByte(void *_ctx)
     if (ctx->RelPixY >= ctx->ImageHeight)
         return -1;
     ret = ctx->GetPixel(ctx->getPixelCtx, ctx->ImageLeft + ctx->RelPixX, ctx->ImageTop + ctx->RelPixY);
-    if (++ctx->RelPixX >= ctx->ImageWidth) {
+    if (++ctx->RelPixX >= ctx->ImageWidth)
+    {
         ctx->RelPixX = 0;
         ++ctx->RelPixY;
     }
@@ -761,14 +797,15 @@ WriteImageDescriptor(GIFContext *ctx, ImageDescriptor *id)
  */
 GIFContext *
 GIF_Create(FILE *fp, void *buffer, int buffer_size, int width, int height,
-	   int numcolors, int colorres)
+           int numcolors, int colorres)
 {
     GIFContext *retval;
     int q, tabsize;
     Byte *bp;
     ScreenDescriptor SD;
 
-    if ((retval = malloc(sizeof(GIFContext))) == NULL) {
+    if ((retval = malloc(sizeof(GIFContext))) == NULL)
+    {
         return NULL;
     }
 
@@ -786,7 +823,8 @@ GIF_Create(FILE *fp, void *buffer, int buffer_size, int width, int height,
     retval->ScreenWidth = width;
 
     /* write GIF signature */
-    if ((Write(retval, "GIF87a", 6)) != GIF_OK) {
+    if ((Write(retval, "GIF87a", 6)) != GIF_OK)
+    {
         free(retval);
         return NULL;
     }
@@ -794,10 +832,13 @@ GIF_Create(FILE *fp, void *buffer, int buffer_size, int width, int height,
     /* initiate and write screen descriptor */
     SD.LocalScreenWidth = width;
     SD.LocalScreenHeight = height;
-    if (retval->NumColors) {
+    if (retval->NumColors)
+    {
         SD.GlobalColorTableSize = BitsNeeded(retval->NumColors) - 1;
         SD.GlobalColorTableFlag = 1;
-    } else {
+    }
+    else
+    {
         SD.GlobalColorTableSize = 0;
         SD.GlobalColorTableFlag = 0;
     }
@@ -805,19 +846,24 @@ GIF_Create(FILE *fp, void *buffer, int buffer_size, int width, int height,
     SD.ColorResolution = colorres - 1;
     SD.BackgroundColorIndex = 0;
     SD.PixelAspectRatio = 0;
-    if (WriteScreenDescriptor(retval, &SD) != GIF_OK) {
+    if (WriteScreenDescriptor(retval, &SD) != GIF_OK)
+    {
         free(retval);
         return NULL;
     }
 
     /* allocate color table */
-    if (retval->NumColors) {
+    if (retval->NumColors)
+    {
         tabsize = retval->NumColors * 3;
-        if ((retval->ColorTable = (Byte *) malloc(tabsize * sizeof(Byte))) == NULL) {
+        if ((retval->ColorTable = (Byte *) malloc(tabsize * sizeof(Byte))) == NULL)
+        {
             free(retval);
 
             return NULL;
-        } else {
+        }
+        else
+        {
             bp = retval->ColorTable;
             for (q = 0; q < tabsize; q++)
                 *bp++ = 0;
@@ -915,17 +961,19 @@ GIF_SetTransparent(GIFContext *ctx, int colornum)
  */
 int
 GIF_CompressImage(GIFContext *ctx, int left, int top, int width, int height,
-		  int (*getpixel)(void *ctx, int x, int y), void *getPixelCtx)
+                  int (*getpixel)(void *ctx, int x, int y), void *getPixelCtx)
 {
     int codesize, errcode;
     ImageDescriptor ID;
     GIFCreationContext cctx;
 
-    if (width < 0) {
+    if (width < 0)
+    {
         width = ctx->ScreenWidth;
         left = 0;
     }
-    if (height < 0) {
+    if (height < 0)
+    {
         height = ctx->ScreenHeight;
         top = 0;
     }
@@ -941,8 +989,8 @@ GIF_CompressImage(GIFContext *ctx, int left, int top, int width, int height,
 
     /* write graphic extension block with transparent color index */
     if ( ctx->TransparentColorIndex >= 0 )     /* (added by j.forkosh) */
-      if ( WriteTransparentColorIndex(ctx, ctx->TransparentColorIndex)
-      !=   GIF_OK ) return GIF_ERRWRITE;
+        if ( WriteTransparentColorIndex(ctx, ctx->TransparentColorIndex)
+                !=   GIF_OK ) return GIF_ERRWRITE;
 
     /* initiate and write image descriptor */
     ID.Separator = ',';
@@ -1015,7 +1063,8 @@ GIF_Close(GIFContext *ctx)
     Close(ctx);
 
     /* release color table */
-    if (ctx->ColorTable) {
+    if (ctx->ColorTable)
+    {
         free(ctx->ColorTable);
         ctx->ColorTable = NULL;
     }

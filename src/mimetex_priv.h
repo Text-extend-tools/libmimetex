@@ -32,7 +32,8 @@
 
 #define BLANKSIGNAL (-991234)       /*rastsmash signal right-hand blank*/
 
-struct fontinfo_struct {
+struct fontinfo_struct
+{
     char *name;
     int family;
     int istext;

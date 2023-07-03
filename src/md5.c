@@ -171,7 +171,8 @@ void md5_update(md5_context *ctx, uint8_t *input, uint32_t length)
     ctx->total[0] &= 0xFFFFFFFF;
     if (ctx->total[0] < length)
         ctx->total[1]++;
-    if (left && length >= fill) {
+    if (left && length >= fill)
+    {
         memcpy((void *)(ctx->buffer + left),
                (void *) input, fill);
         md5_process(ctx, ctx->buffer);
@@ -179,7 +180,8 @@ void md5_update(md5_context *ctx, uint8_t *input, uint32_t length)
         input  += fill;
         left = 0;
     }
-    while (length >= 64) {
+    while (length >= 64)
+    {
         md5_process(ctx, input);
         length -= 64;
         input  += 64;
@@ -191,7 +193,8 @@ void md5_update(md5_context *ctx, uint8_t *input, uint32_t length)
 
 void md5_finish(md5_context *ctx, uint8_t digest[16])
 {
-    static uint8_t md5_padding[64] = {
+    static uint8_t md5_padding[64] =
+    {
         0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

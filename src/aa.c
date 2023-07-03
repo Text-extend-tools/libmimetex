@@ -86,7 +86,8 @@ static int aagridnum(mimetex_ctx *mctx, raster *rp, int irow, int icol)
     if (irow < height - 1)           /* ss (south) bit available */
         /* ss bit value */
         ssbitval = getlongbit(bitmap, imap + width);
-    if (icol > 0) {              /* ww (west) bit available */
+    if (icol > 0)                /* ww (west) bit available */
+    {
         /* ww bit value */
         wwbitval = getlongbit(bitmap, imap - 1);
         if (irow > 0)             /* nw bit available */
@@ -95,7 +96,8 @@ static int aagridnum(mimetex_ctx *mctx, raster *rp, int irow, int icol)
         if (irow < height - 1)        /* sw bit available */
             swbitval = getlongbit(bitmap, imap + width - 1);
     } /* sw bit value */
-    if (icol < width - 1) {          /* ee (east) bit available */
+    if (icol < width - 1)            /* ee (east) bit available */
+    {
         /* ee bit value */
         eebitval = getlongbit(bitmap, imap + 1);
         if (irow > 0)             /* ne bit available */
@@ -236,7 +238,8 @@ static int aapatternnum(mimetex_ctx *mctx, int gridnum)
      * ( gridnum/2 strips off gridnum's low bit because it's
      * the same pattern whether or not center pixel is set )
      * --- */
-    static int patternnum[] = {
+    static int patternnum[] =
+    {
         1, 3, 4, 7, 3, 8, 7, 19, 4, 7, 11, 24, 9, 23, 20, 39,  /*   0- 15 */
         4, 9, 11, 20, 7, 23, 24, 39, 12, 22, 27, 47, 22, 48, 47, 29,  /*  16- 31 */
         3, 8, 9, 23, 10, 25, 21, 42, 7, 19, 20, 39, 21, 42, 44, 34,  /*  32- 47 */
@@ -356,35 +359,38 @@ static int aafollowline(mimetex_ctx *mctx, raster *rp, int irow, int icol, int d
     /* define "fg" as whatever bitval is*/
     bgval = (1 - bitval);
     /* --- set drow,dcol corresponding to desired direction --- */
-    switch (direction) {             /* determine drow,dcol for direction*/
+    switch (direction)               /* determine drow,dcol for direction*/
+    {
     default:
         /* unrecognized direction arg */
         goto end_of_job;
     case  1:
         drow = (-1);
         break;
-        /* follow line up/north */
+    /* follow line up/north */
     case -1:
         drow =   1;
         break;
-        /* down/south */
+    /* down/south */
     case  2:
         dcol =   1;
         break;
-        /* right/east */
+    /* right/east */
     case -2:
         dcol = (-1);
         break;
     }    /* left/west */
     /* --- set bitminus and bitplus --- */
-    if (drow == 0) {             /* we're following line right/left */
+    if (drow == 0)               /* we're following line right/left */
+    {
         if (irow < height)             /* there's a pixel below current */
             /* get it */
             bitminus = getlongbit(bitmap, (icol + (irow + 1) * width));
         if (irow > 0)              /* there's a pixel above current */
             bitplus = getlongbit(bitmap, (icol + (irow - 1) * width));
     } /* get it */
-    if (dcol == 0) {             /* we're following line up/down */
+    if (dcol == 0)               /* we're following line up/down */
+    {
         if (icol < width)              /* there's a pixel to the right */
             /* get it */
             bitplus = getlongbit(bitmap, (icol + 1 + irow * width));
@@ -397,12 +403,14 @@ static int aafollowline(mimetex_ctx *mctx, raster *rp, int irow, int icol, int d
         /* so there's no line to follow */
         goto end_of_job;
     /* --- set isline and isedge (already initted for isline) --- */
-    if (bitval == bitplus) {     /* starting pixel same as above */
+    if (bitval == bitplus)       /* starting pixel same as above */
+    {
         /* so we're at an edge below */
         isedge = (-1);
         isline = 0;
     }
-    if (bitval == bitminus) {         /* starting pixel same as below */
+    if (bitval == bitminus)           /* starting pixel same as below */
+    {
         /* so we're at an edge above */
         isedge = 1;
         isline = 0;
@@ -410,10 +418,11 @@ static int aafollowline(mimetex_ctx *mctx, raster *rp, int irow, int icol, int d
     /* ------------------------------------------------------------
     follow line
     ------------------------------------------------------------ */
-    while (1) {                  /* until turn found (or max) */
+    while (1)                    /* until turn found (or max) */
+    {
         /* --- local allocations and declarations --- */
         int   dbitval = 0,        /* value of bit at jrow,jcol */
-                        dbitminus = 0, dbitplus = 0;    /* value of left/down, right/up bit*/
+              dbitminus = 0, dbitplus = 0;    /* value of left/down, right/up bit*/
         /* --- bump pixel count and indexes; check for max or end-of-raster --- */
         /* bump #pixels followed */
         turn++;
@@ -422,7 +431,8 @@ static int aafollowline(mimetex_ctx *mctx, raster *rp, int irow, int icol, int d
         jcol += dcol;
         if (turn > maxturn             /* already followed max #pixels */
                 ||   jrow < 0 || jrow >= height   /* or jrow past end-of-raster */
-                ||   jcol < 0 || jcol >= width) { /* or jcol past end-of-raster */
+                ||   jcol < 0 || jcol >= width)   /* or jcol past end-of-raster */
+        {
             /* so quit without finding a turn */
             turn = 0;
             goto end_of_job;
@@ -431,14 +441,16 @@ static int aafollowline(mimetex_ctx *mctx, raster *rp, int irow, int icol, int d
         /*value of jrow,jcol bit*/
         dbitval = getlongbit(bitmap, (jcol + jrow * width));
         /* --- set dbitminus and dbitplus --- */
-        if (drow == 0) {           /* we're following line right/left */
+        if (drow == 0)             /* we're following line right/left */
+        {
             if (irow < height)       /* there's a pixel below current */
                 /* get it */
                 dbitminus = getlongbit(bitmap, (jcol + (irow + 1) * width));
             if (irow > 0)            /* there's a pixel above current */
                 dbitplus = getlongbit(bitmap, (jcol + (irow - 1) * width));
         } /* get it */
-        if (dcol == 0) {           /* we're following line up/down */
+        if (dcol == 0)             /* we're following line up/down */
+        {
             if (icol < width)            /* there's a pixel to the right */
                 /* get it */
                 dbitplus = getlongbit(bitmap, (icol + 1 + jrow * width));
@@ -451,23 +463,29 @@ static int aafollowline(mimetex_ctx *mctx, raster *rp, int irow, int icol, int d
                     && bgval == dbitplus     /* and bg same as above pixel */
                     && bgval == dbitminus)   /* and below (or right and left) */
                     || (fgval == dbitplus        /* T or Y if fg same as above pixel*/
-                        && fgval == dbitminus)) {    /* and below (or right and left) */
+                        && fgval == dbitminus))      /* and below (or right and left) */
+            {
                 /* so we're at a T or Y */
                 turn = 0;
                 goto end_of_job;
             }
         /* --- check for turning line --- */
-        if (isline != 0) {             /* turning line must be a line */
-            if (fgval == dbitminus) {        /* turning down */
+        if (isline != 0)               /* turning line must be a line */
+        {
+            if (fgval == dbitminus)          /* turning down */
+            {
                 /* so return negative turn */
                 turn = -turn;
                 goto end_of_job;
-            } else if (fgval == dbitplus)     /* turning up */
+            }
+            else if (fgval == dbitplus)       /* turning up */
                 goto end_of_job;
         }        /* so return positive turn */
         /* --- check for inside corner at edge --- */
-        if (isedge != 0) {             /* inside corner must be a edge */
-            if (isedge < 0 && fgval == bitminus) { /* corner below */
+        if (isedge != 0)               /* inside corner must be a edge */
+        {
+            if (isedge < 0 && fgval == bitminus)   /* corner below */
+            {
                 /* so return negative turn */
                 turn = -turn;
                 goto end_of_job;
@@ -479,14 +497,16 @@ static int aafollowline(mimetex_ctx *mctx, raster *rp, int irow, int icol, int d
         if (isedge != 0            /* abrupt edge end must be an edge */
                 &&   fgval == dbitval)        /* and line must not end */
             if ((isedge < 0 && bgval == bitplus)  /* abrupt end above */
-                    || (isedge > 0 && bgval == bitminus)) {  /* or abrupt end below */
+                    || (isedge > 0 && bgval == bitminus))    /* or abrupt end below */
+            {
                 /* so edge ended abruptly */
                 turn = 0;
                 goto end_of_job;
             }
         /* --- check for outside corner at edge --- */
         if (isedge != 0            /* outside corner must be a edge */
-                &&   bgval == dbitval) {      /* and line must end */
+                &&   bgval == dbitval)        /* and line must end */
+        {
             /* outside turn down from edge above*/
             if (isedge > 0) turn = -turn;
             goto end_of_job;
@@ -540,7 +560,7 @@ end_of_job:
  * ======================================================================= */
 /* --- entry point --- */
 static int aapattern1124(mimetex_ctx *mctx, raster *rp, int irow, int icol,
-                  int gridnum, int grayscale)
+                         int gridnum, int grayscale)
 {
     /* ------------------------------------------------------------
     Allocations and Declarations
@@ -567,7 +587,8 @@ static int aapattern1124(mimetex_ctx *mctx, raster *rp, int irow, int icol,
     ------------------------------------------------------------ */
     /* true to turn off pattern1124 */
     if (0) goto end_of_job;
-    switch (gridnum / 2) {
+    switch (gridnum / 2)
+    {
     /* check pattern#11,24 corner, diag*/
     default:
         /* not a pattern#11,24 gridnum */
@@ -578,12 +599,14 @@ static int aapattern1124(mimetex_ctx *mctx, raster *rp, int irow, int icol,
         hdirection = 2;
         /* directions to follow corner */
         vdirection = -1;
-        if ((jrow = irow + 2) < height) {  /* vert corner below center pixel */
+        if ((jrow = irow + 2) < height)    /* vert corner below center pixel */
+        {
             vertcornval = getlongbit(bitmap, (icol + jrow * width));
             if ((icol - 1) >= 0)       /* lower diag left of center */
                 botdiagval = getlongbit(bitmap, ((icol - 1) + jrow * width));
         }
-        if ((jcol = icol + 2) < width) { /* horz corner right of center */
+        if ((jcol = icol + 2) < width)   /* horz corner right of center */
+        {
             horzcornval = getlongbit(bitmap, (jcol + irow * width));
             if ((irow - 1) >= 0)       /* upper diag above center */
                 topdiagval = getlongbit(bitmap, (jcol + (irow - 1) * width));
@@ -595,12 +618,14 @@ static int aapattern1124(mimetex_ctx *mctx, raster *rp, int irow, int icol,
         hdirection = -2;
         /* directions to follow corner */
         vdirection = -1;
-        if ((jrow = irow + 2) < height) {  /* vert corner below center pixel */
+        if ((jrow = irow + 2) < height)    /* vert corner below center pixel */
+        {
             vertcornval = getlongbit(bitmap, (icol + jrow * width));
             if ((icol + 1) < width)        /* lower diag right of center */
                 botdiagval = getlongbit(bitmap, ((icol + 1) + jrow * width));
         }
-        if ((jcol = icol - 2) >= 0) {    /* horz corner left of center */
+        if ((jcol = icol - 2) >= 0)      /* horz corner left of center */
+        {
             horzcornval = getlongbit(bitmap, (jcol + irow * width));
             if ((irow - 1) >= 0)       /* upper diag above center */
                 topdiagval = getlongbit(bitmap, (jcol + (irow - 1) * width));
@@ -612,12 +637,14 @@ static int aapattern1124(mimetex_ctx *mctx, raster *rp, int irow, int icol,
         hdirection = 2;
         /* directions to follow corner */
         vdirection = 1;
-        if ((jrow = irow - 2) >= 0) {    /* vert corner above center pixel */
+        if ((jrow = irow - 2) >= 0)      /* vert corner above center pixel */
+        {
             vertcornval = getlongbit(bitmap, (icol + jrow * width));
             if ((icol - 1) >= 0)       /* upper diag left of center */
                 topdiagval = getlongbit(bitmap, ((icol - 1) + jrow * width));
         }
-        if ((jcol = icol + 2) < width) { /* horz corner right of center */
+        if ((jcol = icol + 2) < width)   /* horz corner right of center */
+        {
             horzcornval = getlongbit(bitmap, (jcol + irow * width));
             if ((irow + 1) < height)       /* lower diag below center */
                 botdiagval = getlongbit(bitmap, (jcol + (irow + 1) * width));
@@ -629,12 +656,14 @@ static int aapattern1124(mimetex_ctx *mctx, raster *rp, int irow, int icol,
         hdirection = -2;
         /* directions to follow corner */
         vdirection = 1;
-        if ((jrow = irow - 2) >= 0) {    /* vert corner above center pixel */
+        if ((jrow = irow - 2) >= 0)      /* vert corner above center pixel */
+        {
             vertcornval = getlongbit(bitmap, (icol + jrow * width));
             if ((icol + 1) < width)        /* upper diag right of center */
                 topdiagval = getlongbit(bitmap, ((icol + 1) + jrow * width));
         }
-        if ((jcol = icol - 2) >= 0) {    /* horz corner left of center */
+        if ((jcol = icol - 2) >= 0)      /* horz corner left of center */
+        {
             horzcornval = getlongbit(bitmap, (jcol + irow * width));
             if ((irow + 1) < height)       /* lower diag below center */
                 botdiagval = getlongbit(bitmap, (jcol + (irow + 1) * width));
@@ -648,7 +677,8 @@ static int aapattern1124(mimetex_ctx *mctx, raster *rp, int irow, int icol,
     /* ------------------------------------------------------------
     Handle white center
     ------------------------------------------------------------ */
-    if (1 && !iscenter) {
+    if (1 && !iscenter)
+    {
         aaval = (patternum == 11 ? 51 : 64);
         goto end_of_job;
     }
@@ -656,7 +686,8 @@ static int aapattern1124(mimetex_ctx *mctx, raster *rp, int irow, int icol,
     Handle black center
     ------------------------------------------------------------ */
     if (diagval > 1) aaval = (patternum == 24 ? 255 : 191);
-    else {
+    else
+    {
         hturn = aafollowline(mctx, rp, irow, icol, hdirection);
         vturn = aafollowline(mctx, rp, irow, icol, vdirection);
         if (vturn*hdirection < 0  && hturn*vdirection < 0)
@@ -706,7 +737,7 @@ end_of_job:
  * ======================================================================= */
 /* --- entry point --- */
 static int aapattern19(mimetex_ctx *mctx, raster *rp, int irow, int icol,
-                int gridnum, int grayscale)
+                       int gridnum, int grayscale)
 {
     /* ------------------------------------------------------------
     Allocations and Declarations
@@ -726,7 +757,8 @@ static int aapattern19(mimetex_ctx *mctx, raster *rp, int irow, int icol,
     /* we only antialias white pixels */
     if (iscenter) goto end_of_job;
     /* --- set params --- */
-    switch (gridnum / 2) {           /* check pattern#19 orientation */
+    switch (gridnum / 2)             /* check pattern#19 orientation */
+    {
     default:
         /* not a pattern#19 gridnum */
         goto end_of_job;
@@ -799,7 +831,7 @@ end_of_job:
  * ======================================================================= */
 /* --- entry point --- */
 static int aapattern20(mimetex_ctx *mctx, raster *rp, int irow, int icol,
-                int gridnum, int grayscale)
+                       int gridnum, int grayscale)
 {
     /* ------------------------------------------------------------
     Allocations and Declarations
@@ -822,7 +854,8 @@ static int aapattern20(mimetex_ctx *mctx, raster *rp, int irow, int icol,
     /* we only antialias white pixels */
     if (iscenter) goto end_of_job;
     /* --- set params --- */
-    switch (gridnum / 2) {           /* check pattern#20 orientation */
+    switch (gridnum / 2)             /* check pattern#20 orientation */
+    {
     default:
         /* not a pattern#20 gridnum */
         goto end_of_job;
@@ -919,7 +952,7 @@ end_of_job:
  * ======================================================================= */
 /* --- entry point --- */
 static int aapattern39(mimetex_ctx *mctx, raster *rp, int irow, int icol,
-                int gridnum, int grayscale)
+                       int gridnum, int grayscale)
 {
     /* ------------------------------------------------------------
     Allocations and Declarations
@@ -940,7 +973,8 @@ static int aapattern39(mimetex_ctx *mctx, raster *rp, int irow, int icol,
     /* we only antialias white pixels */
     if (iscenter) goto end_of_job;
     /* --- set params --- */
-    switch (gridnum / 2) {           /* check pattern#39 orientation */
+    switch (gridnum / 2)             /* check pattern#39 orientation */
+    {
     default:
         /* not a pattern#39 gridnum */
         goto end_of_job;
@@ -986,7 +1020,8 @@ static int aapattern39(mimetex_ctx *mctx, raster *rp, int irow, int icol,
         break;
     } /* --- end-of-switch(gridnum/2) --- */
     /* --- get turns directions (tunr1==1 signals inside corner) --- */
-    if ((turn1 = aafollowline(mctx, rp, jrow1, jcol1, -direction)) == 1) {
+    if ((turn1 = aafollowline(mctx, rp, jrow1, jcol1, -direction)) == 1)
+    {
         aaval = 0;
         goto end_of_job;
     }
@@ -1040,7 +1075,7 @@ end_of_job:
  * ======================================================================= */
 /* --- entry point --- */
 static int aapatterns(mimetex_ctx *mctx, raster *rp, int irow, int icol,
-               int gridnum, int patternum, int grayscale)
+                      int gridnum, int patternum, int grayscale)
 {
     /* ------------------------------------------------------------
     Allocations and Declarations
@@ -1051,11 +1086,13 @@ static int aapatterns(mimetex_ctx *mctx, raster *rp, int irow, int icol,
     /* ------------------------------------------------------------
     special pattern number processing
     ------------------------------------------------------------ */
-    if (1) {
+    if (1)
+    {
         if (patternum < 1)             /* pattern# not supplied by caller */
             /* so look it up ourselves */
             patternum = aapatternnum(mctx, gridnum);
-        switch (patternum) {
+        switch (patternum)
+        {
         default:
             /* no special processing */
             break;
@@ -1072,7 +1109,7 @@ static int aapatterns(mimetex_ctx *mctx, raster *rp, int irow, int icol,
         case 39:
             aaval = aapattern39(mctx, rp, irow, icol, gridnum, grayscale);
             break;
-            /* case 24: if ( (gridnum&1) == 0 ) aaval=0; break; */
+        /* case 24: if ( (gridnum&1) == 0 ) aaval=0; break; */
         case 29:
             aaval = (iscenter ? grayscale - 1 : 0);
             /* no antialiasing */
@@ -1148,8 +1185,10 @@ int aalowpass(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
     /* ------------------------------------------------------------
     Calculate bytemap as 9-point weighted average over bitmap
     ------------------------------------------------------------ */
-    for (irow = 0; irow < rp->height; irow++) {
-        for (icol = 0; icol < rp->width; icol++) {
+    for (irow = 0; irow < rp->height; irow++)
+    {
+        for (icol = 0; icol < rp->width; icol++)
+        {
             /* center pixel index */
             int   ipixel = icol + irow * (rp->width);
             int   jrow = 0, jcol = 0,     /* box around ipixel */
@@ -1166,7 +1205,8 @@ int aalowpass(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
             bytemap[ipixel] = 0;
             /*--- for ipixel at irow,icol, get weighted average of adjacent pixels ---*/
             for (jrow = irow - 1; jrow <= irow + 1; jrow++)  /* jrow = irow-1...irow+1 */
-                for (jcol = icol - 1; jcol <= icol + 1; jcol++) { /* jcol = icol-1...icol+1 */
+                for (jcol = icol - 1; jcol <= icol + 1; jcol++)   /* jcol = icol-1...icol+1 */
+                {
                     /* averaging index */
                     int jpixel = jcol + jrow * (rp->width);
                     /*always bump weight index*/
@@ -1177,11 +1217,13 @@ int aalowpass(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
                         continue;
                     /* value of bit at jrow,jcol */
                     bitval = (int)getlongbit(bitmap, jpixel);
-                    if (bitval) {            /* this is a black pixel */
+                    if (bitval)              /* this is a black pixel */
+                    {
                         if (jrow == irow && jcol == icol)  /* and this is center point */
                             /* set flag for center point black */
                             iscenter = 1;
-                        else {              /* adjacent point black */
+                        else                /* adjacent point black */
+                        {
                             /* bump adjacent black count */
                             nadjacent++;
                             adjmatrix[adjindex[iwt]] = 1;
@@ -1202,8 +1244,9 @@ int aalowpass(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
                 /* so force grayscale-1=black */
                 bytemap[ipixel] = grayscale - 1;
             else
-            /* center point not black */
-                if (ngaps <= 2) {         /*don't darken checkerboarded pixel*/
+                /* center point not black */
+                if (ngaps <= 2)           /*don't darken checkerboarded pixel*/
+                {
                     bytemap[ipixel] =         /* 0=white ... grayscale-1=black */
                         ((totwts / 2 - 1) + (grayscale - 1) * wadjacent) / totwts; /* not /sumwts; */
                     if (blackscale > 0         /* blackscale kludge turned on */
@@ -1211,13 +1254,17 @@ int aalowpass(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
                         bytemap[ipixel] = grayscale - 1;
                 } /* so force it entirely black */
             /*--- only anti-alias pixels whose adjacent pixels fall within bounds ---*/
-            if (!iscenter) {           /* apply min/mctx->maxadjacent test */
-                if (isminmaxwts) {            /* min/max refer to adjacent weights*/
+            if (!iscenter)             /* apply min/mctx->maxadjacent test */
+            {
+                if (isminmaxwts)              /* min/max refer to adjacent weights*/
+                {
                     if (wadjacent < mctx->minadjacent    /* wts of adjacent points too low */
                             ||   wadjacent > mctx->maxadjacent)     /* or too high */
                         /* so leave point white */
                         bytemap[ipixel] = 0;
-                } else {               /* min/max refer to #adjacent points*/
+                }
+                else                   /* min/max refer to #adjacent points*/
+                {
                     if (nadjacent < mctx->minadjacent    /* too few adjacent points black */
                             ||   nadjacent > mctx->maxadjacent)     /* or too many */
                         /* so leave point white */
@@ -1287,19 +1334,23 @@ int aapnm(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
     Initialization
     ------------------------------------------------------------ */
     /* --- check for bold light --- */
-    if (0) {
-        if (mctx->weightnum > 2) {
+    if (0)
+    {
+        if (mctx->weightnum > 2)
+        {
             /* simulate bold */
             isbgalias = 1;
         }
-        if (mctx->weightnum < 1) {
+        if (mctx->weightnum < 1)
+        {
             /* simulate light */
             isbgonly = 1;
             isfgalias = 0;
         }
     }
     /* --- reset wts[], etc, and calculate total weights --- */
-    if (isresetparams) {         /* wts[], etc taken from params */
+    if (isresetparams)           /* wts[], etc taken from params */
+    {
         /* wts[iwt] index */
         int iwt = 0;
         /* weight for center point */
@@ -1322,12 +1373,13 @@ int aapnm(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
     Calculate bytemap as 9-point weighted average over bitmap
     ------------------------------------------------------------ */
     for (irow = 0; irow < height; irow++)
-        for (icol = 0; icol < width; icol++) {
+        for (icol = 0; icol < width; icol++)
+        {
             /* --- local allocations and declarations --- */
             int   bitval = 0,         /* value of rp bit at irow,icol */
-                           nnbitval = 0, nebitval = 0, eebitval = 0, sebitval = 0, /*adjacent vals*/
-                                                                  /*compass pt names*/
-                                                                  ssbitval = 0, swbitval = 0, wwbitval = 0, nwbitval = 0;
+                  nnbitval = 0, nebitval = 0, eebitval = 0, sebitval = 0, /*adjacent vals*/
+                  /*compass pt names*/
+                  ssbitval = 0, swbitval = 0, wwbitval = 0, nwbitval = 0;
             /*does pixel border a bg or fg edge*/
             int   isbgedge = 0, isfgedge = 0;
             /* antialiased (or unchanged) value*/
@@ -1353,7 +1405,8 @@ int aapnm(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
             if (irow < height - 1)     /* ss (south) bit available */
                 /* ss bit value */
                 ssbitval = getlongbit(bitmap, imap + width);
-            if (icol > 0) {            /* ww (west) bit available */
+            if (icol > 0)              /* ww (west) bit available */
+            {
                 /* ww bit value */
                 wwbitval = getlongbit(bitmap, imap - 1);
                 if (irow > 0)           /* nw bit available */
@@ -1362,7 +1415,8 @@ int aapnm(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
                 if (irow < height - 1)      /* sw bit available */
                     swbitval = getlongbit(bitmap, imap + width - 1);
             } /* sw bit value */
-            if (icol < width - 1) {        /* ee (east) bit available */
+            if (icol < width - 1)          /* ee (east) bit available */
+            {
                 /* ee bit value */
                 eebitval = getlongbit(bitmap, imap + 1);
                 if (irow > 0)           /* ne bit available */
@@ -1385,7 +1439,8 @@ int aapnm(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
                 /*upper-left  edge*/
                 (wwbitval == fgbitval && nnbitval == fgbitval) ;
             /* ---check top/bot left/right edges for corners (added by j.forkosh)--- */
-            if (1) {               /* true to perform test */
+            if (1)                 /* true to perform test */
+            {
                 int isbghorz = 0, isfghorz = 0, isbgvert = 0, isfgvert = 0; /* horz/vert edges */
                 isbghorz =              /* top or bottom edge is all bg */
                     (nwbitval + nnbitval + nebitval == 3 * bgbitval) ||   /* top edge bg */
@@ -1409,7 +1464,8 @@ int aapnm(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
                     continue;
             } /* --- end-of-if(1) --- */
             /* --- check #gaps for checkerboard (added by j.forkosh) --- */
-            if (0) {               /* true to perform test */
+            if (0)                 /* true to perform test */
+            {
                 int ngaps = 0, mingaps = 1, maxgaps = 2;   /* count #fg/bg flips (max=4 noop) */
                 /* upper-left =? upper */
                 if (nwbitval != nnbitval) ngaps++;
@@ -1433,7 +1489,8 @@ int aapnm(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
             /* --- antialias if necessary --- */
             if ((isbgalias && isbgedge)        /* alias pixel surrounding bg */
                     || (isfgalias && isfgedge)        /* alias pixel surrounding fg */
-                    || (isbgedge  && isfgedge)) {     /* neighboring fg and bg pixel */
+                    || (isbgedge  && isfgedge))       /* neighboring fg and bg pixel */
+            {
                 int aasumval =          /* sum wts[]*bitmap[] */
                     wts[0] * nwbitval + wts[1] * nnbitval + wts[2] * nebitval +
                     wts[3] * wwbitval +  wts[4] * bitval  + wts[5] * eebitval +
@@ -1444,9 +1501,10 @@ int aapnm(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
                 aabyteval = (int)(((double)(grayscale - 1)) * aawtval + 0.5);
                 /* set antialiased pixel */
                 bytemap[imap] = (intbyte)(aabyteval);
-                if (mctx->msglevel >= 99 && mctx->msgfp != NULL) {
+                if (mctx->msglevel >= 99 && mctx->msgfp != NULL)
+                {
                     fprintf(mctx->msgfp,
-                    /*diagnostic output*/
+                            /*diagnostic output*/
                             "%s> irow,icol,imap=%d,%d,%d aawtval=%.4f aabyteval=%d\n",
                             (isfirstaa ? "aapnm algorithm" : "aapnm"),
                             irow, icol, imap, aawtval, aabyteval);
@@ -1494,9 +1552,9 @@ int aapnmlookup(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
     Allocations and Declarations
     ------------------------------------------------------------ */
     int width = rp->width, height = rp->height, /* width, height of raster */
-                                    icol = 0,        irow = 0,  /* width, height indexes */
-                                                            /* pixel index = icol + irow*width */
-                                                            imap = (-1);
+        icol = 0,        irow = 0,  /* width, height indexes */
+        /* pixel index = icol + irow*width */
+        imap = (-1);
     /* background, foreground bitval */
     int bgbitval = 0, fgbitval = 1;
     /*debugging switch signals 1st pixel*/
@@ -1513,61 +1571,68 @@ int aapnmlookup(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
      * pattern number data
      * ------------------- */
     /* --- number of adjacent fg pixels set in pattern --- */
-    static int nadjacents[] = {
+    static int nadjacents[] =
+    {
         -1,    /* #adjacent fg pixels for pattern */
-        0,  4,  0,  1,  4,  3,  1,  0,  1,  0,   /*  1-10 */
-        2,  2,  3,  4,  3,  4,  2,  2,  1,  2,   /* 11-20 */
-        1,  2,  1,  2,  0,  1,  3,  2,  3,  2,   /* 21-30 */
-        3,  2,  3,  2,  4,  3,  1,  2,  2,  2,   /* 31-40 */
-        2,  1,  2,  2,  3,  0,  3,  2,  2,  1,  4,   /* 41-51 */
-        -1
-    }; /* --- end-of-nadjacents[] --- */
+            0,  4,  0,  1,  4,  3,  1,  0,  1,  0,   /*  1-10 */
+            2,  2,  3,  4,  3,  4,  2,  2,  1,  2,   /* 11-20 */
+            1,  2,  1,  2,  0,  1,  3,  2,  3,  2,   /* 21-30 */
+            3,  2,  3,  2,  4,  3,  1,  2,  2,  2,   /* 31-40 */
+            2,  1,  2,  2,  3,  0,  3,  2,  2,  1,  4,   /* 41-51 */
+            -1
+        }; /* --- end-of-nadjacents[] --- */
     /* --- number of corner fg pixels set in pattern --- */
-    static int ncorners[] = {
+    static int ncorners[] =
+    {
         -1,      /* #corner fg pixels for pattern */
-        0,  4,  1,  0,  3,  4,  1,  2,  1,  2,   /*  1-10 */
-        0,  0,  3,  2,  3,  2,  4,  4,  2,  1,   /* 11-20 */
-        2,  1,  2,  1,  3,  2,  0,  1,  2,  3,   /* 21-30 */
-        2,  3,  2,  3,  1,  2,  4,  3,  2,  2,   /* 31-40 */
-        2,  3,  2,  2,  1,  4,  1,  2,  2,  3,  0,   /* 41-51 */
-        -1
-    }; /* --- end-of-ncorners[] --- */
+            0,  4,  1,  0,  3,  4,  1,  2,  1,  2,   /*  1-10 */
+            0,  0,  3,  2,  3,  2,  4,  4,  2,  1,   /* 11-20 */
+            2,  1,  2,  1,  3,  2,  0,  1,  2,  3,   /* 21-30 */
+            2,  3,  2,  3,  1,  2,  4,  3,  2,  2,   /* 31-40 */
+            2,  3,  2,  2,  1,  4,  1,  2,  2,  3,  0,   /* 41-51 */
+            -1
+        }; /* --- end-of-ncorners[] --- */
     /* --- 0,1,2=pattern contains horizontal bg,fg,both edge; -1=no edge --- */
-    static int horzedges[] = {
+    static int horzedges[] =
+    {
         -1, /* 0,1,2 = horz bg,fg,both edge */
-        0,  1,  0,  0,  1,  1,  0,  0,  0, -1,   /*  1-10 */
-        0, -1,  1,  1,  1, -1,  1, -1,  2,  0,   /* 11-20 */
-        -1, -1, -1,  0, -1, -1, -1, -1,  2,  1,   /* 21-30 */
-        -1, -1, -1,  1, -1, -1, -1, -1,  2, -1,   /* 31-40 */
-        -1,  1,  1, -1, -1, -1,  0,  0, -1, -1, -1,   /* 41-51 */
-        -1
-    };
+            0,  1,  0,  0,  1,  1,  0,  0,  0, -1,   /*  1-10 */
+            0, -1,  1,  1,  1, -1,  1, -1,  2,  0,   /* 11-20 */
+            -1, -1, -1,  0, -1, -1, -1, -1,  2,  1,   /* 21-30 */
+            -1, -1, -1,  1, -1, -1, -1, -1,  2, -1,   /* 31-40 */
+            -1,  1,  1, -1, -1, -1,  0,  0, -1, -1, -1,   /* 41-51 */
+            -1
+        };
     /* --- end-of-horzedges[] --- */
     /* --- 0,1,2=pattern contains vertical bg,fg,both edge; -1=no edge --- */
-    static int vertedges[] = {
+    static int vertedges[] =
+    {
         -1,     /* 0,1,2 = vert bg,fg,both edge */
-        0,  1,  0,  0,  1,  1,  0, -1, -1, -1,   /*  1-10 */
-        0,  0,  1, -1, -1, -1,  1,  1, -1, -1,   /* 11-20 */
-        -1,  0,  0,  0, -1, -1,  0, -1, -1, -1,   /* 21-30 */
-        -1,  1,  1,  1, -1, -1,  1, -1, -1, -1,   /* 31-40 */
-        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,   /* 41-51 */
-        -1
-    }; /* --- end-of-vertedges[] --- */
+            0,  1,  0,  0,  1,  1,  0, -1, -1, -1,   /*  1-10 */
+            0,  0,  1, -1, -1, -1,  1,  1, -1, -1,   /* 11-20 */
+            -1,  0,  0,  0, -1, -1,  0, -1, -1, -1,   /* 21-30 */
+            -1,  1,  1,  1, -1, -1,  1, -1, -1, -1,   /* 31-40 */
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,   /* 41-51 */
+            -1
+        }; /* --- end-of-vertedges[] --- */
     /* --- 0,1,2=pattern contains diagonal bg,fg,both edge; -1=no edge --- */
-    static  int diagedges[] = {
+    static  int diagedges[] =
+    {
         -1,     /* 0,1,2 = diag bg,fg,both edge */
-        0,  1,  0,  0,  1,  1,  0,  0,  0,  0,   /*  1-10 */
-        2, -1,  1,  1,  1,  1,  1, -1,  0,  2,   /* 11-20 */
-        0, -1,  0,  2,  0, -1,  1,  1,  1,  1,   /* 21-30 */
-        1, -1,  1,  2,  1,  1, -1,  1,  2, -1,   /* 31-40 */
-        1,  0, -1,  2,  1,  0,  1, -1,  1, -1,  1,   /* 41-51 */
-        -1
-    }; /* --- end-of-diagedges[] --- */
+            0,  1,  0,  0,  1,  1,  0,  0,  0,  0,   /*  1-10 */
+            2, -1,  1,  1,  1,  1,  1, -1,  0,  2,   /* 11-20 */
+            0, -1,  0,  2,  0, -1,  1,  1,  1,  1,   /* 21-30 */
+            1, -1,  1,  2,  1,  1, -1,  1,  2, -1,   /* 31-40 */
+            1,  0, -1,  2,  1,  0,  1, -1,  1, -1,  1,   /* 41-51 */
+            -1
+        }; /* --- end-of-diagedges[] --- */
     /* ------------------------------------------------------------
     Calculate bytemap as 9-point weighted average over bitmap
     ------------------------------------------------------------ */
-    for (irow = 0; irow < height; irow++) {
-        for (icol = 0; icol < width; icol++) {
+    for (irow = 0; irow < height; irow++)
+    {
+        for (icol = 0; icol < width; icol++)
+        {
             /* --- local allocations and declarations --- */
             int   bitval = 0,         /* value of rp bit at irow,icol */
                   isbgdiag = 0, isfgdiag = 0, /*does pixel border a bg or fg edge*/
@@ -1597,7 +1662,8 @@ int aapnmlookup(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
             if (patternum < 1 || patternum > 51) continue;
             /* --- special pattern number processing --- */
             if ((aabyteval = aapatterns(mctx, rp, irow, icol, gridnum, patternum, grayscale))
-                    >=   0) {                 /* special processing for pattern */
+                    >=   0)                   /* special processing for pattern */
+            {
                 /* set antialiased pixel */
                 bytemap[imap] = (intbyte)(aabyteval);
                 continue;
@@ -1608,9 +1674,10 @@ int aapnmlookup(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
             isfgdiag = (diagedges[patternum] == 2 || /*current pixel borders a fg edge*/
                         diagedges[patternum] == 1);
             /* ---check top/bot left/right edges for corners (added by j.forkosh)--- */
-            if (1) {               /* true to perform test */
+            if (1)                 /* true to perform test */
+            {
                 int isbghorz = 0, isfghorz = 0, isbgvert = 0, isfgvert = 0, /* horz/vert edges */
-                                             horzedge = horzedges[patternum], vertedge = vertedges[patternum];
+                    horzedge = horzedges[patternum], vertedge = vertedges[patternum];
                 /* top or bottom edge is all bg */
                 isbghorz = (horzedge == 2 || horzedge == 0);
                 /* top or bottom edge is all fg */
@@ -1626,7 +1693,8 @@ int aapnmlookup(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
             } /* --- end-of-if(1) --- */
 #if 0
             /* --- check #gaps for checkerboard (added by j.forkosh) --- */
-            if (0) {               /* true to perform test */
+            if (0)                 /* true to perform test */
+            {
                 int ngaps = 0, mingaps = 1, maxgaps = 2;   /* count #fg/bg flips (max=4 noop) */
                 /* upper-left =? upper */
                 if (nwbitval != nnbitval) ngaps++;
@@ -1651,7 +1719,8 @@ int aapnmlookup(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
             /* --- antialias if necessary --- */
             if ((isbgalias && isbgdiag)        /* alias pixel surrounding bg */
                     || (isfgalias && isfgdiag)        /* alias pixel surrounding fg */
-                    || (isbgdiag  && isfgdiag)) {     /* neighboring fg and bg pixel */
+                    || (isbgdiag  && isfgdiag))       /* neighboring fg and bg pixel */
+            {
                 int aasumval =          /* sum wts[]*bitmap[] */
                     aacenterwt * bitval +   /* apply mctx->centerwt to center pixel */
                     aaadjacentwt * nadjacents[patternum] + /* similarly for adjacents */
@@ -1663,9 +1732,10 @@ int aapnmlookup(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int grayscale)
                 aabyteval = (int)(((double)(grayscale - 1)) * aawtval + 0.5);
                 /* set antialiased pixel */
                 bytemap[imap] = (intbyte)(aabyteval);
-                if (mctx->msglevel >= 99 && mctx->msgfp != NULL) {
+                if (mctx->msglevel >= 99 && mctx->msgfp != NULL)
+                {
                     fprintf(mctx->msgfp,
-                    /*diagnostic output*/
+                            /*diagnostic output*/
                             "%s> irow,icol,imap=%d,%d,%d aawtval=%.4f aabyteval=%d",
                             (isfirstaa ? "aapnmlookup algorithm" : "aapnm"),
                             irow, icol, imap, aawtval, aabyteval);
@@ -1726,25 +1796,27 @@ int aalookup(mimetex_ctx *mctx, int gridnum)
      * modified aapnm() grayscales (second try)
      * --- */
     /* --- grayscale for each pattern when center pixel set/black --- */
-    static int grayscale1[] = {
+    static int grayscale1[] =
+    {
         -1,     /* [0] index not used */
-        BLK, BLK, BLK, BLK, 242, 230, BLK, BLK, BLK, 160, /*  1-10 */
-        BLK, BLK, 217, 230, 217, 230, 204, BLK, BLK, 166, /* 11-20 */
-        BLK, BLK, BLK, BLK, BLK, BLK, 178, 166, 204, 191, /* 21-30 */
-        204, BLK, 204, 191, 217, 204, BLK, 191, 178, BLK, /* 31-40 */
-        178, BLK, BLK, 178, 191, BLK, 191, BLK, 178, BLK, 204, /* 41-51 */
-        -1
-    }; /* --- end-of-grayscale1[] --- */
+            BLK, BLK, BLK, BLK, 242, 230, BLK, BLK, BLK, 160, /*  1-10 */
+            BLK, BLK, 217, 230, 217, 230, 204, BLK, BLK, 166, /* 11-20 */
+            BLK, BLK, BLK, BLK, BLK, BLK, 178, 166, 204, 191, /* 21-30 */
+            204, BLK, 204, 191, 217, 204, BLK, 191, 178, BLK, /* 31-40 */
+            178, BLK, BLK, 178, 191, BLK, 191, BLK, 178, BLK, 204, /* 41-51 */
+            -1
+        }; /* --- end-of-grayscale1[] --- */
     /* --- grayscale for each pattern when center pixel not set/white --- */
-    static int grayscale0[] = {
+    static int grayscale0[] =
+    {
         -1,     /* [0] index not used */
-        WHT, WHT, WHT, WHT, WHT, WHT, WHT, WHT, WHT, WHT, /*  1-10 */
-        64, WHT, WHT, 128, 115, 128, WHT, WHT, WHT, 64, /* 11-20 */
-        WHT, WHT, WHT, 64, WHT, WHT, 76, 64, 102, 89, /* 21-30 */
-        102, WHT, 102, WHT, 115, 102, WHT, 89, 76, WHT, /* 31-40 */
-        76, WHT, WHT, 76, 89, WHT, 89, WHT, 76, WHT, 102, /* 41-51 */
-        -1
-    }; /* --- end-of-grayscale0[] --- */
+            WHT, WHT, WHT, WHT, WHT, WHT, WHT, WHT, WHT, WHT, /*  1-10 */
+            64, WHT, WHT, 128, 115, 128, WHT, WHT, WHT, 64, /* 11-20 */
+            WHT, WHT, WHT, 64, WHT, WHT, 76, 64, 102, 89, /* 21-30 */
+            102, WHT, 102, WHT, 115, 102, WHT, 89, 76, WHT, /* 31-40 */
+            76, WHT, WHT, 76, 89, WHT, 89, WHT, 76, WHT, 102, /* 41-51 */
+            -1
+        }; /* --- end-of-grayscale0[] --- */
 #endif
     /* ------------------------------------------------------------
     look up grayscale for gridnum
@@ -1757,7 +1829,8 @@ int aalookup(mimetex_ctx *mctx, int gridnum)
     pattern = aapatternnum(mctx, gridnum);
     /* some internal error */
     if (pattern < 1 || pattern > 51) goto end_of_job;
-    if (mctx->ispatternnumcount) {         /* counts being accumulated */
+    if (mctx->ispatternnumcount)           /* counts being accumulated */
+    {
         /* bump diagnostic count */
         if (iscenter) mctx->patternnumcount1[pattern] += 1;
         else      mctx->patternnumcount0[pattern] += 1;
@@ -1804,7 +1877,8 @@ int aalowpasslookup(mimetex_ctx *mctx, raster *rp, intbyte *bytemap, int graysca
     generate bytemap by table lookup for each pixel of bitmap
     ------------------------------------------------------------ */
     for (irow = 0; irow < height; irow++)
-        for (icol = 0; icol < width; icol++) {
+        for (icol = 0; icol < width; icol++)
+        {
             /* --- get gridnum and center bit value, init aabyteval --- */
             /*grid# coding 3x3 grid at irow,icol*/
             gridnum = aagridnum(mctx, rp, irow, icol);
@@ -1891,7 +1965,8 @@ int aacolormap(mimetex_ctx *mctx, intbyte *bytemap, int nbytes,
         bytevalues[(int)bytemap[ibyte]] = 1;
     /* --- collect the 1's indexes in colors[] --- */
     for (igray = 0; igray < grayscale; igray++) /* check all possible values */
-        if ((int)bytevalues[igray]) {      /*bytemap contains igray somewheres*/
+        if ((int)bytevalues[igray])        /*bytemap contains igray somewheres*/
+        {
             /* so store igray in colors */
             colors[ncolors] = (intbyte)igray;
             /* save colors[] index */
@@ -1904,10 +1979,12 @@ int aacolormap(mimetex_ctx *mctx, intbyte *bytemap, int nbytes,
     /* --- rescale colors so largest, colors[ncolors-1], is black --- */
     if (isscale)                 /* only rescale if requested */
         if (ncolors > 1)            /* and if not a "blank" raster */
-            if (colors[ncolors-1] > 0) {       /*and at least one pixel non-white*/
+            if (colors[ncolors-1] > 0)         /*and at least one pixel non-white*/
+            {
                 /* --- multiply each colors[] by factor that scales largest to 255 --- */
                 double scalefactor = ((double)(grayscale - 1)) / ((double)colors[ncolors-1]);
-                for (igray = 1; igray < ncolors; igray++) { /* re-scale each colors[] */
+                for (igray = 1; igray < ncolors; igray++)   /* re-scale each colors[] */
+                {
                     colors[igray] = min2(grayscale - 1, (int)(scalefactor * colors[igray] + 0.5));
                     if (igray > 5) colors[igray] = min2(grayscale - 1, colors[igray] + 2 * igray);
                 }
@@ -1916,8 +1993,10 @@ int aacolormap(mimetex_ctx *mctx, intbyte *bytemap, int nbytes,
     if (isgamma              /* only gamma correct if requested */
             &&   mctx->gammacorrection > 0.0001)      /* and if we have gamma correction */
         if (ncolors > 1)            /* and if not a "blank" raster */
-            if (colors[ncolors-1] > 0) {       /*and at least one pixel non-white*/
-                for (igray = 1; igray < ncolors; igray++) { /*gamma correct each colors[]*/
+            if (colors[ncolors-1] > 0)         /*and at least one pixel non-white*/
+            {
+                for (igray = 1; igray < ncolors; igray++)   /*gamma correct each colors[]*/
+                {
                     int grayval = colors[igray],    /* original 0=white to 255=black */
                         gmax = grayscale - 1; /* should be 255 */
                     /*0=black 1=white*/
@@ -1999,7 +2078,8 @@ raster  *aaweights(mimetex_ctx *mctx, int width, int height)
     Fill weight matrix, as per Notes above
     ------------------------------------------------------------ */
     for (irow = 0; irow < height; irow++)  /* outer loop over rows */
-        for (icol = 0; icol < width; icol++) { /* inner loop over cols */
+        for (icol = 0; icol < width; icol++)   /* inner loop over cols */
+        {
             int jrow = height - irow - 1,   /* backwards irow, height-1,...,0 */
                 jcol =  width - icol - 1; /* backwards icol,  width-1,...,0 */
             /* weight */
@@ -2054,8 +2134,8 @@ int aawtpixel(mimetex_ctx *mctx, raster *image, int ipixel, raster *weights, int
     Allocations and Declarations
     ------------------------------------------------------------ */
     int aaimgval = 0,           /* weighted avg returned to caller */
-                   /* total of all wts, sum wts used */
-                   totwts = 0, sumwts = 0;
+        /* total of all wts, sum wts used */
+        totwts = 0, sumwts = 0;
     int pixsz = image->pixsz,       /* #bits per image pixel */
         black1 = 1, black8 = 255,   /* black for 1-bit, 8-bit pixels */
         black = (pixsz == 1 ? black1 : black8), /* black value for our image */
@@ -2067,9 +2147,9 @@ int aawtpixel(mimetex_ctx *mctx, raster *image, int ipixel, raster *weights, int
         imgheight =   image->height,    /* #rows in image */
         imgwidth  =   image->width; /* #cols in image */
     int wtrow,  wtrow0 = wtheight / 2,  /* center row index for weights */
-        wtcol,  wtcol0 = wtwidth / 2, /* center col index for weights */
-        imgrow, imgrow0 = ipixel / imgwidth, /* center row index for ipixel */
-        imgcol, imgcol0 = ipixel - (imgrow0 * imgwidth); /*center col for ipixel*/
+                wtcol,  wtcol0 = wtwidth / 2, /* center col index for weights */
+                        imgrow, imgrow0 = ipixel / imgwidth, /* center row index for ipixel */
+                                imgcol, imgcol0 = ipixel - (imgrow0 * imgwidth); /*center col for ipixel*/
     /* --- rotated grid variables --- */
     /* rotate from previous call */
     static  int prevrotate = 0;
@@ -2081,7 +2161,8 @@ int aawtpixel(mimetex_ctx *mctx, raster *image, int ipixel, raster *weights, int
     Initialization
     ------------------------------------------------------------ */
     /* --- refresh trig functions for rotate when it changes --- */
-    if (rotate != prevrotate) {      /* need new sine/cosine */
+    if (rotate != prevrotate)        /* need new sine/cosine */
+    {
         /*cos of rotate in radians*/
         costheta = cos(((double)rotate) / 57.29578);
         /*sin of rotate in radians*/
@@ -2092,20 +2173,22 @@ int aawtpixel(mimetex_ctx *mctx, raster *image, int ipixel, raster *weights, int
     Calculate aapixel as weighted average over image points around ipixel
     ------------------------------------------------------------ */
     for (wtrow = 0; wtrow < wtheight; wtrow++)
-        for (wtcol = 0; wtcol < wtwidth; wtcol++) {
+        for (wtcol = 0; wtcol < wtwidth; wtcol++)
+        {
             /* --- allocations and declarations --- */
             /* weight for irow,icol */
             int   wt = (int)getpixel(weights, wtrow, wtcol);
             int   drow = wtrow - wtrow0,      /* delta row offset from center */
-                         /* delta col offset from center */
-                         dcol = wtcol - wtcol0;
+                  /* delta col offset from center */
+                  dcol = wtcol - wtcol0;
             /* set true if center point black */
             int   iscenter = 0;
             /* --- initialization --- */
             /* sum all weights */
             totwts += wt;
             /* --- rotate (if requested) --- */
-            if (rotate != 0) {         /* non-zero rotation */
+            if (rotate != 0)           /* non-zero rotation */
+            {
                 /* --- apply rotation matrix to (x=dcol,y=drow) --- */
                 /* need floats */
                 double dx = (double)dcol, dy = (double)drow, dtemp;
@@ -2128,7 +2211,8 @@ int aawtpixel(mimetex_ctx *mctx, raster *image, int ipixel, raster *weights, int
             imgcol = imgcol0 + dcol;
             /* --- if pixel in bounds, accumulate weighted average --- */
             if (imgrow >= 0 && imgrow < imgheight) /* row is in bounds */
-                if (imgcol >= 0 && imgcol < imgwidth) { /* and col is in bounds */
+                if (imgcol >= 0 && imgcol < imgwidth)   /* and col is in bounds */
+                {
                     /* --- accumulate weighted average --- */
                     /* image value */
                     int imgval = (int)getpixel(image, imgrow, imgcol);
@@ -2147,7 +2231,7 @@ int aawtpixel(mimetex_ctx *mctx, raster *image, int ipixel, raster *weights, int
         /* so force average black */
         aaimgval = black8;
     else
-    /* center point not black */
+        /* center point not black */
         aaimgval =                /* 0=white ... black */
             ((totwts / 2 - 1) + scalefactor * aaimgval) / totwts; /* not /sumwts; */
     /*end_of_job:*/

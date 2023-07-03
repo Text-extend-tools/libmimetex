@@ -1,7 +1,8 @@
 #ifndef GIFSAVE_H
 #define GIFSAVE_H
 
-enum GIF_Code {
+enum GIF_Code
+{
     GIF_OK = 0,
     GIF_ERRCREATE,
     GIF_ERRWRITE,
@@ -11,7 +12,8 @@ enum GIF_Code {
 typedef unsigned Word;          /* at least two bytes (16 bits) */
 typedef unsigned char Byte;     /* exactly one byte (8 bits) */
 
-typedef struct {
+typedef struct
+{
     int  BitsPrPrimColor,    /* bits pr primary color */
          NumColors;          /* number of colors in color table */
     int  TransparentColorIndex; /* (added by j.forkosh) */
@@ -34,11 +36,11 @@ typedef struct {
 } GIFContext;
 
 GIFContext* GIF_Create(FILE *fp, void *buffer, int buffer_size,
-        int width, int height, int numcolors, int colorres);
+                       int width, int height, int numcolors, int colorres);
 void GIF_SetColor(GIFContext *ctx, int colornum, int red, int green, int blue);
 void GIF_SetTransparent(GIFContext *ctx, int colornum);	/* (added by j.forkosh) */
 int  GIF_CompressImage(GIFContext *ctx, int left, int top, int width, int height,
-		       int (*getpixel)(void *ctx, int x, int y), void *cctx);
+                       int (*getpixel)(void *ctx, int x, int y), void *cctx);
 int  GIF_Close(GIFContext *);
 
 #endif /* GIFSAVE_H */

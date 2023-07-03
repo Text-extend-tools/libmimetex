@@ -399,15 +399,16 @@ header files and macros
 #include "mimetex.h"
 
 /* --- anti-aliasing parameter values by font weight --- */
-aaparameters aaparams[] = {
- /* ------------------------------------------------------------
-    centerwt adj corner minadj max  fgalias,only,bgalias,only
-    ------------------------------------------------------------ */
-      { 64,  1,  1,    6,  8,     1, 0, 0, 0 },  /* 0 = light */
-      /* below is { CENTERWT, ADJACENTWT, CORNERWT, MINADJACENT, MAXADJACENT, 1, 0, 0, 0 }, */
-      { 8,   2,  1,    6,  8,     1, 0, 0, 0 },
-      { 8,   1,  1,    5,  8,     1, 0, 0, 0 },  /* 2 = semibold */
-      { 8,   2,  1,    4,  9,     1, 0, 0, 0 }   /* 3 = bold */
+aaparameters aaparams[] =
+{
+    /* ------------------------------------------------------------
+       centerwt adj corner minadj max  fgalias,only,bgalias,only
+       ------------------------------------------------------------ */
+    { 64,  1,  1,    6,  8,     1, 0, 0, 0 },  /* 0 = light */
+    /* below is { CENTERWT, ADJACENTWT, CORNERWT, MINADJACENT, MAXADJACENT, 1, 0, 0, 0 }, */
+    { 8,   2,  1,    6,  8,     1, 0, 0, 0 },
+    { 8,   1,  1,    5,  8,     1, 0, 0, 0 },  /* 2 = semibold */
+    { 8,   2,  1,    4,  9,     1, 0, 0, 0 }   /* 3 = bold */
 }; /* --- end-of-aaparams[] --- */
 
 /* ------------------------------------------------------------
@@ -483,7 +484,8 @@ debugging and logging / error reporting
 
 int nfontinfo =  8;
 
-struct fontinfo_struct fontinfo[] = {/* --- name family istext class --- */
+struct fontinfo_struct fontinfo[] =  /* --- name family istext class --- */
+{
     { "\\math",    0,       0,  0 }, /*(0) default math mode */
     { "\\mathcal", CMSY10,  0,  1 }, /*(1) calligraphic, uppercase */
     { "\\mathscr", RSFS10,  0,  1 }, /*(2) rsfs/script, uppercase */
@@ -499,21 +501,22 @@ struct fontinfo_struct fontinfo[] = {/* --- name family istext class --- */
 /* ---
  * space between adjacent symbols, e.g., symspace[RELATION][VARIABLE]
  * ------------------------------------------------------------------ */
-int symspace[11][11] = {
- /* -----------------------------------------------------------------------
-         Right... ORD OPER  BIN  REL OPEN CLOS PUNC  VAR DISP SPACE unused
-    Left... -------------------------------------------------------------- */
-      /*ORDINARY*/  {  2,   3,   3,   5,   3,   2,   2,   2,   3,   0,    0 },
-      /*OPERATOR*/  {  3,   1,   1,   5,   3,   2,   2,   2,   3,   0,    0 },
-      /*BINARYOP*/  {  2,   1,   1,   5,   3,   2,   2,   2,   3,   0,    0 },
-      /*RELATION*/  {  5,   5,   5,   2,   5,   5,   2,   5,   5,   0,    0 },
-      /*OPENING*/  {  2,   2,   2,   5,   2,   4,   2,   2,   3,   0,    0 },
-      /*CLOSING*/  {  2,   3,   3,   5,   4,   2,   1,   2,   3,   0,    0 },
-      /*PUNCTION*/  {  2,   2,   2,   5,   2,   2,   1,   2,   2,   0,    0 },
-      /*VARIABLE*/  {  2,   2,   2,   5,   2,   2,   1,   2,   2,   0,    0 },
-      /*DISPOPER*/  {  2,   3,   3,   5,   2,   3,   2,   2,   2,   0,    0 },
-      /*SPACEOPER*/  {  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,    0 },
-      /*unused*/  {  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,    0 }
+int symspace[11][11] =
+{
+    /* -----------------------------------------------------------------------
+            Right... ORD OPER  BIN  REL OPEN CLOS PUNC  VAR DISP SPACE unused
+       Left... -------------------------------------------------------------- */
+    /*ORDINARY*/  {  2,   3,   3,   5,   3,   2,   2,   2,   3,   0,    0 },
+    /*OPERATOR*/  {  3,   1,   1,   5,   3,   2,   2,   2,   3,   0,    0 },
+    /*BINARYOP*/  {  2,   1,   1,   5,   3,   2,   2,   2,   3,   0,    0 },
+    /*RELATION*/  {  5,   5,   5,   2,   5,   5,   2,   5,   5,   0,    0 },
+    /*OPENING*/  {  2,   2,   2,   5,   2,   4,   2,   2,   3,   0,    0 },
+    /*CLOSING*/  {  2,   3,   3,   5,   4,   2,   1,   2,   3,   0,    0 },
+    /*PUNCTION*/  {  2,   2,   2,   5,   2,   2,   1,   2,   2,   0,    0 },
+    /*VARIABLE*/  {  2,   2,   2,   5,   2,   2,   1,   2,   2,   0,    0 },
+    /*DISPOPER*/  {  2,   3,   3,   5,   2,   3,   2,   2,   2,   0,    0 },
+    /*SPACEOPER*/  {  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,    0 },
+    /*unused*/  {  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,    0 }
 }; /* --- end-of-symspace[][] --- */
 
 #include "texfonts.h"
@@ -522,29 +525,32 @@ int symspace[11][11] = {
  * font families (by size), just a table of preceding font info
  * ------------------------------------------------------------ */
 /* --- for low-pass anti-aliasing --- */
-fontfamily aafonttable[] = {
-/* -----------------------------------------------------------------------------------------
-    family     size=0,        1,        2,        3,        4,        5,        6,        7
-  ----------------------------------------------------------------------------------------- */
-      {   CMR10, {   cmr83,   cmr100,   cmr118,   cmr131,   cmr160,   cmr180,   cmr210,   cmr250}},
-      {  CMMI10, {  cmmi83,  cmmi100,  cmmi118,  cmmi131,  cmmi160,  cmmi180,  cmmi210,  cmmi250}},
-      { CMMIB10, { cmmib83, cmmib100, cmmib118, cmmib131, cmmib160, cmmib180, cmmib210, cmmib250}},
-      {  CMSY10, {  cmsy83,  cmsy100,  cmsy118,  cmsy131,  cmsy160,  cmsy180,  cmsy210,  cmsy250}},
-      {  CMEX10, {  cmex83,  cmex100,  cmex118,  cmex131,  cmex160,  cmex180,  cmex210,  cmex250}},
-      {  RSFS10, {  rsfs83,  rsfs100,  rsfs118,  rsfs131,  rsfs160,  rsfs180,  rsfs210,  rsfs250}},
-      { BBOLD10, { bbold83, bbold100, bbold118, bbold131, bbold160, bbold180, bbold210, bbold250}},
-      {STMARY10, {stmary83, stmary100, stmary118, stmary131, stmary160, stmary180, stmary210, stmary250}},
-      {   CYR10, { wncyr83, wncyr100, wncyr118, wncyr131, wncyr160, wncyr180, wncyr210, wncyr250}},
-      {    -999, {    NULL,     NULL,     NULL,     NULL,     NULL,     NULL,     NULL,     NULL}}
+fontfamily aafonttable[] =
+{
+    /* -----------------------------------------------------------------------------------------
+        family     size=0,        1,        2,        3,        4,        5,        6,        7
+      ----------------------------------------------------------------------------------------- */
+    {   CMR10, {   cmr83,   cmr100,   cmr118,   cmr131,   cmr160,   cmr180,   cmr210,   cmr250}},
+    {  CMMI10, {  cmmi83,  cmmi100,  cmmi118,  cmmi131,  cmmi160,  cmmi180,  cmmi210,  cmmi250}},
+    { CMMIB10, { cmmib83, cmmib100, cmmib118, cmmib131, cmmib160, cmmib180, cmmib210, cmmib250}},
+    {  CMSY10, {  cmsy83,  cmsy100,  cmsy118,  cmsy131,  cmsy160,  cmsy180,  cmsy210,  cmsy250}},
+    {  CMEX10, {  cmex83,  cmex100,  cmex118,  cmex131,  cmex160,  cmex180,  cmex210,  cmex250}},
+    {  RSFS10, {  rsfs83,  rsfs100,  rsfs118,  rsfs131,  rsfs160,  rsfs180,  rsfs210,  rsfs250}},
+    { BBOLD10, { bbold83, bbold100, bbold118, bbold131, bbold160, bbold180, bbold210, bbold250}},
+    {STMARY10, {stmary83, stmary100, stmary118, stmary131, stmary160, stmary180, stmary210, stmary250}},
+    {   CYR10, { wncyr83, wncyr100, wncyr118, wncyr131, wncyr160, wncyr180, wncyr210, wncyr250}},
+    {    -999, {    NULL,     NULL,     NULL,     NULL,     NULL,     NULL,     NULL,     NULL}}
 }; /* --- end-of-aafonttable[] --- */
 
 
-/*supersampling mctx->shrinkfactor by size*/ 
-int shrinkfactors[]= {
+/*supersampling mctx->shrinkfactor by size*/
+int shrinkfactors[]=
+{
     3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
-static mathchardef handlers[] = {
+static mathchardef handlers[] =
+{
     /* ---------- c o m m a n d  h a n d l e r s --------------
           symbol    arg1     arg2     arg3       function
     -------------------------------------------------------- */
@@ -758,7 +764,8 @@ static mathchardef handlers[] = {
     { NULL,     -999,   -999,   -999,       NULL }
 };
 
-static mathchardef symbols_cmmi10[] = {
+static mathchardef symbols_cmmi10[] =
+{
     /* --------------------- C M M I --------------------------
           symbol     charnum    family    class     function
     -------------------------------------------------------- */
@@ -909,7 +916,8 @@ static mathchardef symbols_cmmi10[] = {
     { NULL,     -999,   -999,   -999,       NULL }
 };
 
-static mathchardef symbols_cmmib10[] = {
+static mathchardef symbols_cmmib10[] =
+{
     /* --------------------- C M M I B ------------------------
           symbol     charnum    family    class     function
     -------------------------------------------------------- */
@@ -1058,7 +1066,8 @@ static mathchardef symbols_cmmib10[] = {
     { NULL,     -999,   -999,   -999,       NULL }
 };
 
-static mathchardef symbols_cmsy10[] = {
+static mathchardef symbols_cmsy10[] =
+{
     /* --------------------- C M S Y --------------------------
           symbol     charnum    family    class     function
     -------------------------------------------------------- */
@@ -1244,7 +1253,8 @@ static mathchardef symbols_cmsy10[] = {
     { NULL,     -999,   -999,   -999,       NULL }
 };
 
-static mathchardef symbols_cmr10[] = {
+static mathchardef symbols_cmr10[] =
+{
     /* ---------------------- C M R ---------------------------
           symbol     charnum    family    class     function
     -------------------------------------------------------- */
@@ -1381,7 +1391,8 @@ static mathchardef symbols_cmr10[] = {
     { NULL,     -999,   -999,   -999,       NULL }
 };
 
-static mathchardef symbols_cmex10[] = {
+static mathchardef symbols_cmex10[] =
+{
     /* --------------------- C M E X --------------------------
           symbol     charnum    family    class     function
     -------------------------------------------------------- */
@@ -1558,7 +1569,8 @@ static mathchardef symbols_cmex10[] = {
     { NULL,     -999,   -999,   -999,       NULL }
 };
 
-static mathchardef symbols_rsfs10[] = {
+static mathchardef symbols_rsfs10[] =
+{
     /* --------------------- R S F S --------------------------
           symbol     charnum    family    class     function
     -------------------------------------------------------- */
@@ -1619,7 +1631,8 @@ static mathchardef symbols_rsfs10[] = {
     { NULL,     -999,   -999,   -999,       NULL }
 };
 
-static mathchardef symbols_bbold10[] = {
+static mathchardef symbols_bbold10[] =
+{
     /* -------------------- B B O L D -------------------------
           symbol     charnum    family    class     function
     -------------------------------------------------------- */
@@ -1778,7 +1791,8 @@ static mathchardef symbols_bbold10[] = {
     { NULL,     -999,   -999,   -999,       NULL }
 };
 
-static mathchardef symbols_stmary10[] = {
+static mathchardef symbols_stmary10[] =
+{
     /* ------------------- S T M A R Y ------------------------
           symbol     charnum    family    class     function
     -------------------------------------------------------- */
@@ -1893,7 +1907,8 @@ static mathchardef symbols_stmary10[] = {
     { NULL,     -999,   -999,   -999,       NULL }
 };
 
-static mathchardef symbols_cyr10[] = {
+static mathchardef symbols_cyr10[] =
+{
     /* ---------------------- C Y R ---------------------------
           symbol     charnum    family    class     function
     -------------------------------------------------------- */
@@ -2006,17 +2021,18 @@ static mathchardef symbols_cyr10[] = {
     { NULL,     -999,   -999,   -999,       NULL }
 }; /* --- end-of-symtable[] --- */
 
-mathchardef_table symtables[16] = {
+mathchardef_table symtables[16] =
+{
     { NOVALUE,  handlers         },
-	{ CMMI10,   symbols_cmmi10   },
-	{ CMMIB10,  symbols_cmmib10  },
-	{ CMSY10,   symbols_cmsy10   },
-	{ CMR10,    symbols_cmr10    },
-	{ CMEX10,   symbols_cmex10   },
-	{ RSFS10,   symbols_rsfs10   },
-	{ BBOLD10,  symbols_bbold10  },
-	{ STMARY10, symbols_stmary10 },
-	{ CYR10,    symbols_cyr10    },
+    { CMMI10,   symbols_cmmi10   },
+    { CMMIB10,  symbols_cmmib10  },
+    { CMSY10,   symbols_cmsy10   },
+    { CMR10,    symbols_cmr10    },
+    { CMEX10,   symbols_cmex10   },
+    { RSFS10,   symbols_rsfs10   },
+    { BBOLD10,  symbols_bbold10  },
+    { STMARY10, symbols_stmary10 },
+    { CYR10,    symbols_cyr10    },
     { NOVALUE,  NULL             },
     { NOVALUE,  NULL             },
     { NOVALUE,  NULL             },

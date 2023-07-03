@@ -72,7 +72,8 @@ char *dbltoa(double dblval, int npts)
     /* ------------------------------------------------------------
     Check sign
     ------------------------------------------------------------ */
-    if (dblval < 0.0) {          /* got a negative value to convert */
+    if (dblval < 0.0)            /* got a negative value to convert */
+    {
         /* set flag and make it positive */
         isneg = 1;
         dblval = (-dblval);
@@ -80,21 +81,24 @@ char *dbltoa(double dblval, int npts)
     /* ------------------------------------------------------------
     Get fractional part of dblval if required
     ------------------------------------------------------------ */
-    if (npts > 0) {
+    if (npts > 0)
+    {
         /* loop index */
         int ipts = npts;
         /* fractional part as double */
         dbldigit = dblval - floor(dblval);
         /* check if rounded frac > 1 */
         digit = 1;
-        while (--ipts >= 0) {      /* count down */
+        while (--ipts >= 0)        /* count down */
+        {
             /* shift left one digit at a time */
             dbldigit *= 10.0;
             digit *= 10;
         }        /* and keep max up-to-date */
         /* store fractional part as integer*/
         ifrac = (int)(dbldigit + 0.5);
-        if (ifrac >= digit) {      /* round to next whole number */
+        if (ifrac >= digit)        /* round to next whole number */
+        {
             /* bump val, reset frac to zero */
             dblval++;
             ifrac = 0;
@@ -107,7 +111,8 @@ char *dbltoa(double dblval, int npts)
     ------------------------------------------------------------ */
     /* get rid of fractional part */
     dblval = floor(dblval);
-    while (dblval > 0.0) {           /* still have data digits remaining*/
+    while (dblval > 0.0)             /* still have data digits remaining*/
+    {
         /* shift out next digit */
         dbldigit = floor(dblval / 10.0);
         /* least signif digit */
@@ -125,7 +130,8 @@ char *dbltoa(double dblval, int npts)
     ------------------------------------------------------------ */
     /* leading paren for negative value*/
     if (isneg) *finptr++ = '(';
-    for (digit = ndigits - 1; digit >= 0; digit--) { /* start with most significant */
+    for (digit = ndigits - 1; digit >= 0; digit--)   /* start with most significant */
+    {
         /* store digit */
         *finptr++ = digits[digit];
         if (digit > 0 && digit % 3 == 0)   /* need a comma */
@@ -134,7 +140,8 @@ char *dbltoa(double dblval, int npts)
     /* ------------------------------------------------------------
     Format fractional part using ifrac
     ------------------------------------------------------------ */
-    if (npts > 0) {
+    if (npts > 0)
+    {
         /* start with decimal point */
         *finptr++ = '.';
         /* convert to string */
@@ -193,10 +200,12 @@ int emit_string(FILE *fp, int col1, char *string, char *comment)
     /* start line with blanks */
     memset(line, ' ', 255);
     /* --- embed string into line --- */
-    if (string != NULL) {            /* if caller gave us a string... */
+    if (string != NULL)              /* if caller gave us a string... */
+    {
         /* #cols required for string */
         fieldlen = strlen(string);
-        if (string[fieldlen-1] == '\n') {    /* check last char for newline */
+        if (string[fieldlen-1] == '\n')      /* check last char for newline */
+        {
             /* got it, so set flag */
             isnewline = 1;
             fieldlen--;
@@ -206,7 +215,8 @@ int emit_string(FILE *fp, int col1, char *string, char *comment)
         col1 += fieldlen;
     }         /* bump col past epilog */
     /* --- embed comment into line --- */
-    if (comment != NULL) {           /* if caller gave us a comment... */
+    if (comment != NULL)             /* if caller gave us a comment... */
+    {
         fieldlen = 6 + strlen(comment); /* plus  /star, star/, 2 spaces */
         if (linelen - fieldlen < col1)   /* comment won't fit */
             /* truncate comment to fit */
@@ -272,7 +282,8 @@ char    *calendar(int year, int month, int day)
     /* ascii day or 4-digit year */
     char    aval[64];
     /* --- calendar data --- */
-    static  char *monthnames[] = {
+    static  char *monthnames[] =
+    {
         "?", "January", "February", "March", "April",
         "May", "June", "July", "August", "September", "October",
         "November", "December", "?"
@@ -318,7 +329,7 @@ char    *calendar(int year, int month, int day)
     /* end top row */
     strcat(calbuff, "\\\\");
     strcat(calbuff,
-    /* now begin calendar arrayr */
+           /* now begin calendar arrayr */
            "\\begin{array}{|c|c|c|c|c|c|c|CCCCCC} \\hline"
            "\\tiny\\text{Sun} & \\tiny\\text{Mon} & \\tiny\\text{Tue} &"
            "\\tiny\\text{Wed} & \\tiny\\text{Thu} & \\tiny\\text{Fri} &"
@@ -326,7 +337,8 @@ char    *calendar(int year, int month, int day)
     /* ------------------------------------------------------------
     generate calendar
     ------------------------------------------------------------ */
-    for (idd = 1; idd <= modays[month]; idd++) { /* run through days of month */
+    for (idd = 1; idd <= modays[month]; idd++)   /* run through days of month */
+    {
         /* --- get day-of-week for this day --- */
         /* 1=Monday...7=Sunday */
         iday = 1 + (daynumber(year, month, idd) % 7);
@@ -334,7 +346,8 @@ char    *calendar(int year, int month, int day)
         if (iday == 7) iday = 0;
         /* --- may need empty cells at beginning of month --- */
         if (idd == 1)              /* first day of month */
-            if (iday > 0) {           /* need to skip cells */
+            if (iday > 0)             /* need to skip cells */
+            {
                 /*cells to skip*/
                 strcpy(aval, "\\ &\\ &\\ &\\ &\\ &\\ &\\ &\\ &\\ &\\");
                 /*skip cells preceding 1st of month*/
@@ -345,7 +358,8 @@ char    *calendar(int year, int month, int day)
         /* convert idd to ascii */
         sprintf(aval, "%d", idd);
         if (idd == day             /* emphasize today's date */
-                /*&&   month==mm && year==yy*/) { /* only if this month's calendar */
+                /*&&   month==mm && year==yy*/)   /* only if this month's calendar */
+        {
             /*emphasize, 1 size smaller*/
             strcat(calbuff, "{\\fs{-1}\\left\\langle ");
             /* put in idd */
@@ -353,16 +367,17 @@ char    *calendar(int year, int month, int day)
             strcat(calbuff, "\\right\\rangle}");
         } /* finish emphasis */
         else
-        /* not today's date */
+            /* not today's date */
             /* so just put in idd */
             strcat(calbuff, aval);
         /* --- terminate cell --- */
-        if (idd < modays[month]) {         /* not yet end-of-month */
+        if (idd < modays[month])           /* not yet end-of-month */
+        {
             if (iday < 6)             /* still have days left in week */
                 /* new cell in same week */
                 strcat(calbuff, "&");
             else
-            /* reached end-of-week */
+                /* reached end-of-week */
                 strcat(calbuff, "\\\\ \\hline");
         }   /* so start new week */
     } /* --- end-of-for(idd) --- */
@@ -407,11 +422,13 @@ char *timestamp(int tzdelta, int ifmt)
     struct tm *tmstruct = (struct tm *)NULL, *localtime();
     int year = 0, hour = 0, ispm = 1,      /* adjust year, and set am/pm hour */
         month = 0, day = 0; /* adjust day and month for delta  */
-    static  char *daynames[] = {
+    static  char *daynames[] =
+    {
         "Monday", "Tuesday", "Wednesday",
         "Thursday", "Friday", "Saturday", "Sunday"
     };
-    static  char *monthnames[] = {
+    static  char *monthnames[] =
+    {
         "?", "January", "February", "March", "April",
         "May", "June", "July", "August", "September", "October",
         "November", "December", "?"
@@ -446,10 +463,12 @@ char *timestamp(int tzdelta, int ifmt)
             ||   month < 1 || month > 12
             ||   year < 1973) goto end_of_job;
     /* --- adjust hour for am/pm --- */
-    switch (ifmt) {
+    switch (ifmt)
+    {
     default:
     case 0:
-        if (hour < 12) {         /* am check */
+        if (hour < 12)           /* am check */
+        {
             /* reset pm flag */
             ispm = 0;
             if (hour == 0) hour = 12;
@@ -459,7 +478,8 @@ char *timestamp(int tzdelta, int ifmt)
         break;
     } /* --- end-of-switch(ifmt) --- */
     /* --- format date:time stamp --- */
-    switch (ifmt) {
+    switch (ifmt)
+    {
     default:
     case 0:  /* --- 2005-03-05:11:49:59am --- */
         sprintf(timebuff, "%04d-%02d-%02d:%02d:%02d:%02d%s", year, month, day,
@@ -511,7 +531,8 @@ int tzadjust(int tzdelta, int *year, int *month, int *day, int *hour)
     /*dereference args*/
     int yy = *year, mm = *month, dd = *day, hh = *hour;
     /* --- calendar data --- */
-    static  int modays[] = {
+    static  int modays[] =
+    {
         0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 0
     };
     /* ------------------------------------------------------------
@@ -535,30 +556,36 @@ int tzadjust(int tzdelta, int *year, int *month, int *day, int *hour)
     /* Feb has 29 days in leap years */
     modays[2] = (yy % 4 == 0 ? 29 : 28);
     /* --- adjust day --- */
-    if (hh < 0) {                /* went to preceding day */
+    if (hh < 0)                  /* went to preceding day */
+    {
         dd--;
         hh += 24;
     }
-    if (hh > 23) {               /* went to next day */
+    if (hh > 23)                 /* went to next day */
+    {
         dd++;
         hh -= 24;
     }
     /* --- adjust month --- */
-    if (dd < 1) {                /* went to preceding month */
+    if (dd < 1)                  /* went to preceding month */
+    {
         mm--;
         dd = modays[mm];
     }
-    if (dd > modays[mm]) {           /* went to next month */
+    if (dd > modays[mm])             /* went to next month */
+    {
         mm++;
         dd = 1;
     }
     /* --- adjust year --- */
-    if (mm < 1) {                /* went to preceding year */
+    if (mm < 1)                  /* went to preceding year */
+    {
         yy--;
         mm = 12;
         dd = modays[mm];
     }
-    if (mm > 12) {               /* went to next year */
+    if (mm > 12)                 /* went to next year */
+    {
         yy++;
         mm = 1;
         dd = 1;
@@ -602,7 +629,8 @@ int daynumber(int year, int month, int day)
                 days4yrs = 1461,        /* #days in 4 yrs = 365*4 + 1 */
                 days1yr  = 365;
     /* --- table of accumulated days per month (last index not used) --- */
-    static  int modays[] = {
+    static  int modays[] =
+    {
         0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365
     };
     /* --- variables for #days since day0 --- */
@@ -636,7 +664,8 @@ int daynumber(int year, int month, int day)
     /* --- add #days within current year --- */
     ndays += (modays[month-1] + (day - 1));
     /* --- may need an extra day if current year is a leap year --- */
-    if (nyears == 3) {           /*three preceding yrs so this is 4th*/
+    if (nyears == 3)             /*three preceding yrs so this is 4th*/
+    {
         if (month > 2)             /* past feb so need an extra day */
             /*if ( year != 100 )*/      /* unless it's 2000AD */
             ndays++;
@@ -734,13 +763,15 @@ char    *strwrap(mimetex_ctx *mctx, char *s, int linelen, int tablen)
     /* ------------------------------------------------------------
     Insert \\'s and spaces as needed
     ------------------------------------------------------------ */
-    while (1) {                  /* till end-of-line */
+    while (1)                    /* till end-of-line */
+    {
         /* --- init --- */
         trimwhite(sol);
         /*remove leading/trailing whitespace*/
         /* no chars in current line yet */
         thislen = thistab = 0;
-        if (istab && tablen > 0) {     /* need to indent this line */
+        if (istab && tablen > 0)       /* need to indent this line */
+        {
             /* insert indent at start of line */
             strchange(0, sol, tab);
             thistab = tablen;
@@ -753,12 +784,14 @@ char    *strwrap(mimetex_ctx *mctx, char *s, int linelen, int tablen)
         rhslen = strlen(sol);
         /* no more \\'s needed */
         if (rhslen + thistab <= linelen) break;
-        if (0 && mctx->msgfp != NULL && mctx->msglevel >= 99) {
+        if (0 && mctx->msgfp != NULL && mctx->msglevel >= 99)
+        {
             fprintf(mctx->msgfp, "strwrap> rhslen=%d, sol=\"\"%s\"\"\n", rhslen, sol);
             fflush(mctx->msgfp);
         }
         /* --- look for last whitespace preceding linelen --- */
-        while (1) {                /* till we exceed linelen */
+        while (1)                  /* till we exceed linelen */
+        {
             wordlen = strcspn(sol + thislen, " \t\n\r\f\v :;.,"); /*ptr to next white/break*/
             if (sol[thislen+wordlen] == '\000')   /* no more whitespace in string */
                 /* so nothing more we can do */
@@ -812,7 +845,8 @@ char    *strnlower(char *s, int n)
     /* save s for return to caller */
     char    *p = s;
     if (!isempty(s))             /* check for valid input */
-        while (*p != '\000') {         /* lowercase each char till end */
+        while (*p != '\000')           /* lowercase each char till end */
+        {
             /* lowercase this char */
             *p = tolower(*p);
             if (n > 0)           /* only lowercase first n chars */
@@ -850,15 +884,16 @@ char    *strchange(int nfirst, char *from, char *to)
     Allocations and Declarations
     ------------------------------------------------------------ */
     int tolen = (to == NULL ? 0 : strlen(to)), /* #chars in replacement string */
-                /*need to shift from left or right*/
-                nshift = abs(tolen - nfirst);
+        /*need to shift from left or right*/
+        nshift = abs(tolen - nfirst);
     /* ------------------------------------------------------------
     shift from left or right to accommodate replacement of its nfirst chars by to
     ------------------------------------------------------------ */
     if (tolen < nfirst)              /* shift left is easy */
         /* because memory doesn't overlap */
         strcpy(from, from + nshift);
-    if (tolen > nfirst) {            /* need more room at start of from */
+    if (tolen > nfirst)              /* need more room at start of from */
+    {
         /* ptr to null terminating from */
         char *pfrom = from + strlen(from);
         for (; pfrom >= from; pfrom--)   /* shift all chars including null */
@@ -903,20 +938,24 @@ int strreplace(char *string, char *from, char *to, int nreplace)
     int fromlen = (from == NULL ? 0 : strlen(from)), /* #chars to be replaced */
         tolen = (to == NULL ? 0 : strlen(to)); /* #chars in replacement string */
     char *pfrom = (char *)NULL,      /*ptr to 1st char of from in string*/
-         *pstring = string,      /*ptr past previously replaced from*/
-         *strchange(); /* change 'from' to 'to' */
+          *pstring = string,      /*ptr past previously replaced from*/
+           *strchange(); /* change 'from' to 'to' */
     /* #replacements returned to caller*/
     int nreps = 0;
     /* ------------------------------------------------------------
     repace occurrences of 'from' in string to 'to'
     ------------------------------------------------------------ */
     if (string == (char *)NULL       /* no input string */
-            || (fromlen < 1 && nreplace <= 0))  /* replacing empty string forever */ {
+            || (fromlen < 1 && nreplace <= 0))  /* replacing empty string forever */
+    {
         /* so signal error */
         nreps = (-1);
-    } else {
+    }
+    else
+    {
         /* args okay */
-        while (nreplace < 1 || nreps < nreplace) { /* up to #replacements requested */
+        while (nreplace < 1 || nreps < nreplace)   /* up to #replacements requested */
+        {
             if (fromlen > 0)             /* have 'from' string */
                 /*ptr to 1st char of from in string*/
                 pfrom = strstr(pstring, from);
@@ -925,7 +964,8 @@ int strreplace(char *string, char *from, char *to, int nreplace)
             /*no more from's, so back to caller*/
             if (pfrom == (char *)NULL) break;
             if (strchange(fromlen, pfrom, to) /* leading 'from' changed to 'to' */
-                    == (char *)NULL) {
+                    == (char *)NULL)
+            {
                 /* signal error to caller */
                 nreps = (-1);
                 break;
@@ -997,7 +1037,7 @@ char    *strwstr(mimetex_ctx *mctx, char *string, char *substr, char *white, int
     Allocations and Declarations
     ------------------------------------------------------------ */
     char    *psubstr = substr, *pstring = string,/*ptr to current char in substr,str*/
-            *pfound = (char *)NULL; /*ptr to found substr back to caller*/
+             *pfound = (char *)NULL; /*ptr to found substr back to caller*/
     /* callers white whithout i,I */
     char    *pwhite = NULL, whitespace[256];
     int iscase = (white == NULL ? 1 :    /* case-sensitive if i,I in white */
@@ -1014,9 +1054,11 @@ char    *strwstr(mimetex_ctx *mctx, char *string, char *substr, char *white, int
     /* --- set up whitespace --- */
     /*default if no user input for white*/
     strcpy(whitespace, WHITEMATH);
-    if (white != NULL) {
+    if (white != NULL)
+    {
         /*user provided ptr to white string*/
-        if (*white != '\000') {         /*and it's not just an empty string*/
+        if (*white != '\000')           /*and it's not just an empty string*/
+        {
             /* so use caller's white spaces */
             strcpy(whitespace, white);
             while ((pwhite = strchr(whitespace, 'i')) != NULL) /* have an embedded i */
@@ -1032,9 +1074,11 @@ char    *strwstr(mimetex_ctx *mctx, char *string, char *substr, char *white, int
     /* ------------------------------------------------------------
     Find first occurrence of substr in string
     ------------------------------------------------------------ */
-    if (string != NULL) {
+    if (string != NULL)
+    {
         /* caller passed us a string ptr */
-        while (*pstring != '\000') {        /* break when string exhausted */
+        while (*pstring != '\000')          /* break when string exhausted */
+        {
             /* (re)start at next char in string*/
             char  *pstrptr = pstring;
             /* leading whitespace */
@@ -1043,9 +1087,11 @@ char    *strwstr(mimetex_ctx *mctx, char *string, char *substr, char *white, int
             psubstr = substr;
             /* reset length of found substr */
             foundlen = 0;
-            if (substr != NULL) {
+            if (substr != NULL)
+            {
                 /* caller passed us a substr ptr */
-                while (*psubstr != '\000') {      /*see if pstring begins with substr*/
+                while (*psubstr != '\000')        /*see if pstring begins with substr*/
+                {
                     /* --- check for end-of-string before finding match --- */
                     if (*pstrptr == '\000')          /* end-of-string without a match */
                         /* keep trying with next char */
@@ -1104,7 +1150,7 @@ char    *strwstr(mimetex_ctx *mctx, char *string, char *substr, char *white, int
             /* back to caller */
             goto end_of_job;
             /* ---failed to find substr, continue trying with next char in string--- */
-        nextstrchar:
+nextstrchar:
             /* continue outer loop */
             /* bump to next char in string */
             pstring++;
@@ -1114,7 +1160,8 @@ char    *strwstr(mimetex_ctx *mctx, char *string, char *substr, char *white, int
     Back to caller with ptr to first occurrence of substr in string
     ------------------------------------------------------------ */
 end_of_job:
-    if (mctx->msglevel >= 999 && mctx->msgfp != NULL) {   /* debugging/diagnostic output */
+    if (mctx->msglevel >= 999 && mctx->msgfp != NULL)     /* debugging/diagnostic output */
+    {
         fprintf(mctx->msgfp, "strwstr> str=\"%.72s\" sub=\"%s\" found at offset %d\n",
                 string, substr, (pfound == NULL ? (-1) : (int)(pfound - string)));
         fflush(mctx->msgfp);
@@ -1155,7 +1202,7 @@ int isstrstr(char *string, char *snippets, int iscase)
     /*1 if any snippet found in string*/
     int status = 0;
     char snip[99], *snipptr = snippets,  /* munge through each snippet */
-         delim = ',', *delimptr = NULL; /* separated by delim's */
+                    delim = ',', *delimptr = NULL; /* separated by delim's */
     char stringcp[999], *cp = stringcp; /*maybe lowercased copy of string*/
     /* ------------------------------------------------------------
     initialization
@@ -1175,15 +1222,18 @@ int isstrstr(char *string, char *snippets, int iscase)
     /* ------------------------------------------------------------
     extract each snippet and see if it's a substring of string
     ------------------------------------------------------------ */
-    while (snipptr != NULL) {        /* while we still have snippets */
+    while (snipptr != NULL)          /* while we still have snippets */
+    {
         /* --- extract next snippet --- */
         if ((delimptr = strchr(snipptr, delim)) /* locate next comma delim */
-                ==   NULL) {              /*not found following last snippet*/
+                ==   NULL)                /*not found following last snippet*/
+        {
             /* local copy of last snippet */
             strcpy(snip, snipptr);
             snipptr = NULL;
         }         /* signal end-of-string */
-        else {                /* snippet ends just before delim */
+        else                  /* snippet ends just before delim */
+        {
             /* #chars in snippet */
             int sniplen = (int)(delimptr - snipptr) - 1;
             /* local copy of snippet chars */
@@ -1198,7 +1248,8 @@ int isstrstr(char *string, char *snippets, int iscase)
                 /*lowercase any uppercase chars*/
                 if (isupper(*cp)) *cp = tolower(*cp);
         /* --- check if snippet in string --- */
-        if (strstr(stringcp, snip) != NULL) {  /* found snippet in string */
+        if (strstr(stringcp, snip) != NULL)    /* found snippet in string */
+        {
             /* so reset return status */
             status = 1;
             break;
@@ -1247,13 +1298,13 @@ int hex_bitmap(raster *rp, FILE *fp, int col1, int isstr)
     Allocations and Declarations
     ------------------------------------------------------------ */
     int ibyte,              /* pixmap[ibyte] index */
-    /*#bytes in bitmap or .gf-formatted*/
-    nbytes = pixbytes(rp);
+        /*#bytes in bitmap or .gf-formatted*/
+        nbytes = pixbytes(rp);
     /* col1 leading blanks */
     char    stub[64] = "                                ";
     int linewidth = 64,         /* (roughly) rightmost column */
-                    /* #cols required for each byte */
-                    colwidth = (isstr ? 4 : 5);
+        /* #cols required for each byte */
+        colwidth = (isstr ? 4 : 5);
     /* new line after ncols bytes */
     int ncols = (linewidth - col1) / colwidth;
     /* ------------------------------------------------------------
@@ -1270,25 +1321,28 @@ int hex_bitmap(raster *rp, FILE *fp, int col1, int isstr)
     ------------------------------------------------------------ */
     /* opening " before first line */
     if (isstr) fprintf(fp, "\"");
-    for (ibyte = 0; ibyte < nbytes; ibyte++) { /* one byte at a time */
+    for (ibyte = 0; ibyte < nbytes; ibyte++)   /* one byte at a time */
+    {
         /* --- display a byte as hex char or number, depending on isstr --- */
         if (isstr)                 /* string format wanted */
             /*print byte as hex char*/
             fprintf(fp, "\\x%02x", (rp->pixmap)[ibyte]);
         else
-        /* comma-separated format wanted */
+            /* comma-separated format wanted */
             /*print byte as hex number*/
             fprintf(fp, "0x%02x", (rp->pixmap)[ibyte]);
         /* --- add a separator and newline, etc, as necessary --- */
-        if (ibyte < nbytes - 1) {  /* not the last byte yet */
+        if (ibyte < nbytes - 1)    /* not the last byte yet */
+        {
             /* follow hex number with comma */
             if (!isstr) fprintf(fp, ",");
-            if ((ibyte + 1) % ncols == 0) {  /* need new line after every ncols */
+            if ((ibyte + 1) % ncols == 0)    /* need new line after every ncols */
+            {
                 if (!isstr)            /* for hex numbers format ... */
                     /* ...just need newline and stub */
                     fprintf(fp, "\n%.*s", col1, stub);
                 else
-                /* for string format... */
+                    /* for string format... */
                     fprintf(fp, "\"\n%.*s\"", col1, stub);
             } /*...need closing, opening "s*/
         } /* --- end-of-if(ibyte<nbytes-1) --- */

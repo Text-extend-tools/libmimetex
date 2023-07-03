@@ -164,7 +164,8 @@ typedef struct subraster_struct subraster;
 Font info corresponding to TeX \matchardef, see TeXbook Appendix F (page 431)
 -------------------------------------------------------------------------- */
 typedef subraster *(*HANDLER)(mimetex_ctx *mctx, char **expression, int size, subraster *basesp, int arg1, int arg2, int arg3);       /* ptr to function returning void* */
-typedef struct mathchardef_struct {
+typedef struct mathchardef_struct
+{
     /* -----------------------------------------------------------------------
     symbol name ("a", "\alpha", "1", etc)
     ------------------------------------------------------------------------ */
@@ -183,7 +184,8 @@ typedef struct mathchardef_struct {
     HANDLER handler;          /* e.g., rastfrac() for \frac's */
 } mathchardef ; /* --- end-of-mathchardef_struct --- */
 
-typedef struct mathchardef_table_struct {
+typedef struct mathchardef_table_struct
+{
     int family;
     mathchardef *table;
 } mathchardef_table;
@@ -328,7 +330,8 @@ typedef struct fontfamily_struct /* typedef for fontfamily */
 /* --- supersampling shrink factors corresponding to displayed sizes --- */
 extern int shrinkfactors[];
 
-struct mimetex_ctx_struct {
+struct mimetex_ctx_struct
+{
     FILE *msgfp;            /* output in command-line mode */
     int msglevel       ;    /* message level for verbose/debug */
     /* --- embed warnings in rendered expressions, [\xxx?] if \xxx unknown --- */

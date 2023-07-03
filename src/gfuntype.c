@@ -271,7 +271,8 @@ static char	*readaline (FILE *fp)
     -------------------------------------------------------------------------- */
     if (fp != NULL)			/*if null, return previous line read*/
         if ( (bufptr=fgets (buffer,2047,fp))	/* read next line from fp */
-                != NULL) {			/* and check that we succeeded */
+                != NULL)  			/* and check that we succeeded */
+        {
             if ( (delim=strchr (bufptr,'\n'))	/* look for terminating newline */
                     != NULL)				/* and check that we found it */
                 *delim = '\000';			/* truncate line at newline */
@@ -311,16 +312,19 @@ static int	findnextchar (mimetex_ctx *mctx, FILE *fp, int *location)
     /* --------------------------------------------------------------------------
     keep reading lines until eof or keyword found
     -------------------------------------------------------------------------- */
-    while ( (line=readaline (fp)) != NULL) { /* read lines until eof */
+    while ( (line=readaline (fp)) != NULL)   /* read lines until eof */
+    {
         if (mctx->msglevel >= 999)	/* very, very verbose output requested */
             fprintf (mctx->msgfp,"nextchar> line = %s\n",line);
-        if ( (delim=strstr (line,keyword)) != NULL) { /* found keyword on line */
+        if ( (delim=strstr (line,keyword)) != NULL)   /* found keyword on line */
+        {
             /* --- get character number from line --- */
             strcpy (token,delim+strlen (keyword)); /* char num follows keyword */
             charnum = atoi (token);	/* interpret token as integer charnum */
             /* --- get location at beginning of line --- */
             if (location != (int *) NULL)   /* caller wants location returned */
-                if ( (delim=strchr (line,':')) != NULL) { /* location precedes colon */
+                if ( (delim=strchr (line,':')) != NULL)   /* location precedes colon */
+                {
                     *delim = '\000';	/* terminate line after location */
                     *location = atoi (line);
                 } /* interpret location as integer */
@@ -351,14 +355,15 @@ static int	bitcmp (unsigned char *bs1, unsigned char *bs2, int n)
     -------------------------------------------------------------------------- */
     int	icmp = 0;		/* returned to caller */
     int	nbytes = n/8,		/* #full bytes we can compare with memcmp()*/
-                 nbits  = n%8,  ibit=0;	/* #trailing bits in last byte, index */
+        nbits  = n%8,  ibit=0;	/* #trailing bits in last byte, index */
     /* --------------------------------------------------------------------------
     compare leading bytes, then trailing bits
     -------------------------------------------------------------------------- */
     if (nbytes > 0) icmp = memcmp (bs1,bs2,nbytes);  /* compare leading bytes */
     if (icmp == 0)		/* leading bytes identical */
         if (nbits > 0)		/* and we have trailing bits */
-            for (ibit=0; ibit<nbits; ibit++) { /* check each bit */
+            for (ibit=0; ibit<nbits; ibit++)   /* check each bit */
+            {
                 icmp = (int) get1bit (bs1[nbytes],ibit) - (int) get1bit (bs2[nbytes],ibit);
                 if (icmp != 0) break;
             }	/* done at first unmatched bit */
@@ -395,9 +400,9 @@ static int	rasterizechar (FILE *fp, raster *image)
     char	*line;	/* read next scan line for char from fp */
     unsigned char bitvec[1024][128]; /* scan lines parsed up to 1024x1024 bits */
     int	height = 0,		/* #scan lines in fp comprising char */
-                 width = 0;		/* #chars on longest scan line */
+        width = 0;		/* #chars on longest scan line */
     int	iscan,			/* bitvec[] index */
-    ibit;			/* bit along scan (i.e., 0...width-1) */
+        ibit;			/* bit along scan (i.e., 0...width-1) */
     int	isokay = 0;		/* returned status, init for failure */
     /* --- bitmap and .gf-formatted image info (we'll choose smallest) --- */
     int	iformat = gformat;	/*0=best, 1=bitmap, 2=8-bit.gf, 3=4-bit.gf*/
@@ -408,7 +413,8 @@ static int	rasterizechar (FILE *fp, raster *image)
     read lines till ".<--" terminator, and construct one vector[] int per line
     -------------------------------------------------------------------------- */
     memset (bitvec,0,128*1024);	/* zero-fill bitvec[] */
-    while ( (line=readaline (fp)) != NULL) { /* read lines until eof */
+    while ( (line=readaline (fp)) != NULL)   /* read lines until eof */
+    {
         /* --- allocations and declarations --- */
         int	icol, ncols=strlen (line); /* line[] column index, #cols in line[] */
         /* --- check for end-of-char (when we encounter corner line) --- */
@@ -417,7 +423,8 @@ static int	rasterizechar (FILE *fp, raster *image)
         /* --- parse line (encode asterisks comprising character image) --- */
         memset (bitvec[height],0,128);	/* first zero out all bits */
         for (icol=0; icol<ncols; icol++)   /* now check line[] for asterisks */
-            if (line[icol] == '*') {	/* we want to set this bit */
+            if (line[icol] == '*')  	/* we want to set this bit */
+            {
                 setlongbit (bitvec[height],icol); /* set bit */
                 if (icol >= width) width=icol+1;
             } /* and check for new width */
@@ -434,7 +441,8 @@ static int	rasterizechar (FILE *fp, raster *image)
     image->height = height;		/* and height */
     image->format = gformat;	/* set format (will be reset below) */
     image->pixsz = 1;		/* #bits per pixel (or #counts in .gf fmt) */
-    if (gformat==0 || gformat==1) {	/* bitmap representation allowed */
+    if (gformat==0 || gformat==1)  	/* bitmap representation allowed */
+    {
         nbytes1 = pixmapsz (image);	/* #bytes needed for bitmap */
         iformat = 1;
     }		/* default to bitmap format */
@@ -442,27 +450,32 @@ static int	rasterizechar (FILE *fp, raster *image)
     perform .gf-like compression on image in bitvec
     -------------------------------------------------------------------------- */
     if (gformat == 0		/* choose optimal/smallest respresentation */
-            ||   gformat==2 || gformat==3) {	/* .gf-like compressed representation */
+            ||   gformat==2 || gformat==3)  	/* .gf-like compressed representation */
+    {
         /* --- try both 8-bits/count and 4-bits/count for best compression --- */
         int	maxbitcount[2] = {254,14}; /* don't count too much in one byte */
         int	repeatcmds[2]  = {255,15}; /* opcode for repeat/duplicate count */
         int	minbytes = 0;		/* #bytes needed for smallest format */
-        for (iformat=2; iformat<=3; iformat++) {   /* 2=8-bit packing, 3=4-bit */
+        for (iformat=2; iformat<=3; iformat++)     /* 2=8-bit packing, 3=4-bit */
+        {
             int	gfbitcount = 0,		/* count of consecutive gfbitval's */
-                             gfbitval = 0,		/* begin with count of leading 0's */
-                                        pixcount = 0;		/* #packed bytes (#black/white flips) */
+                gfbitval = 0,		/* begin with count of leading 0's */
+                pixcount = 0;		/* #packed bytes (#black/white flips) */
             unsigned char *gfcount = gfpixcount[iformat-2]; /*counts for this format*/
             if (gformat!=0 && gformat!=iformat)   /* this format not allowed */
                 continue;			/* so just skip it */
-            for (iscan=0; iscan<height; iscan++) { /* for each integer in bitvec[] */
+            for (iscan=0; iscan<height; iscan++)   /* for each integer in bitvec[] */
+            {
                 int	bitval = 0;		/* current actual pixel value */
                 int	nrepeats=0, nextreps=0;	/* #duplicate lines below current,next line*/
                 /* --- check for repeated/duplicate scan lines --- */
                 if (isrepeat		/* we're storing scan line repeat counts */
-                        &&   iscan < height-1) {	/* current scan line isn't the last line */
+                        &&   iscan < height-1)  	/* current scan line isn't the last line */
+                {
                     /* --- count repeats --- */
                     int jscan = iscan;		/* compare current scan with lines below it*/
-                    while (++jscan < height) {   /* until last scan line */
+                    while (++jscan < height)     /* until last scan line */
+                    {
                         if (nrepeats == jscan-iscan-1) /*no intervening non-identical lines*/
                             if (bitcmp (bitvec[iscan],bitvec[jscan],width) == 0)  /* identical */
                                 nrepeats++;		/* so bump repeat count */
@@ -472,9 +485,12 @@ static int	rasterizechar (FILE *fp, raster *image)
                                     nextreps++;
                     }		/* so bump next lline repeat count */
                     /* --- set repeat command and count --- */
-                    if (nrepeats > 0) {	/* found repeated lines below current */
+                    if (nrepeats > 0)  	/* found repeated lines below current */
+                    {
                         int maxrepeats = maxbitcount[iformat-2]; /*max count/repeats per byte*/
-                        if (nrepeats > maxrepeats) nrepeats=maxrepeats; { /* don't exceed max */
+                        if (nrepeats > maxrepeats) nrepeats=maxrepeats;
+                        /* don't exceed max */
+                        {
                             setbyfmt (iformat,gfcount,pixcount,repeatcmds[iformat-2]);    /*set cmd*/
                         }
                         {
@@ -484,9 +500,11 @@ static int	rasterizechar (FILE *fp, raster *image)
                     }		/* don't bump pixcount within macros */
                 } /* --- end-of-if(isrepeat) --- */
                 /* --- set bit counts for current scan line --- */
-                for (ibit=0; ibit<width; ibit++) {	/* for all bits in this scanline */
+                for (ibit=0; ibit<width; ibit++)  	/* for all bits in this scanline */
+                {
                     bitval = getlongbit (bitvec[iscan],ibit); /* check actual pixel value */
-                    if (bitval != gfbitval) {	/* black-to-white edge (or vice versa) */
+                    if (bitval != gfbitval)  	/* black-to-white edge (or vice versa) */
+                    {
                         {
                             setbyfmt (iformat,gfcount,pixcount,gfbitcount);    /*set byte or nibble*/
                         }
@@ -495,7 +513,8 @@ static int	rasterizechar (FILE *fp, raster *image)
                         gfbitval = 1-gfbitval;
                     }	/* flip bit to be counted */
                     else			/* check count if continuing with same val */
-                        if (gfbitcount >= maxbitcount[iformat-2]) {   /* max count per byte */
+                        if (gfbitcount >= maxbitcount[iformat-2])     /* max count per byte */
+                        {
                             {
                                 setbyfmt (iformat,gfcount,pixcount,gfbitcount);    /*set byte or nibble*/
                             }
@@ -510,13 +529,15 @@ static int	rasterizechar (FILE *fp, raster *image)
                 iscan += nrepeats;		/* skip repeated/duplicate scan lines */
                 if (nrepeats>0 || nextreps>0)   /* emit count to align on full scan */
                     if (iscan < height-1)	/* have another scan line below this one */
-                        if (gfbitcount > 0) {	/* should always have some final count */
+                        if (gfbitcount > 0)  	/* should always have some final count */
+                        {
                             {
                                 setbyfmt (iformat,gfcount,pixcount,gfbitcount);    /*set byte or nibble*/
                             }
                             pixcount++;		/* don't bump pixcount within macro */
                             gfbitcount = 0;		/* reset consecutive bit count */
-                            if (bitval == getlongbit (bitvec[iscan+1],0)) {  /* same bit value */
+                            if (bitval == getlongbit (bitvec[iscan+1],0))    /* same bit value */
+                            {
                                 clearbyfmt (iformat,gfcount,pixcount); /*so we need a dummy 0 count*/
                                 pixcount++;
                             }		/* don't bump pixcount within macros */
@@ -525,7 +546,8 @@ static int	rasterizechar (FILE *fp, raster *image)
                         } /* --- end-of-if(nrepeats...gfbitcount>0) --- */
             } /* --- end-of-for(iscan) --- */
             /* --- store final count --- */
-            if (gfbitcount > 0) {	/* have a final count */
+            if (gfbitcount > 0)  	/* have a final count */
+            {
                 {
                     setbyfmt (iformat,gfcount,pixcount,gfbitcount);    /*set byte or nibble*/
                 }
@@ -546,7 +568,8 @@ static int	rasterizechar (FILE *fp, raster *image)
             if (nbytes1 <= minbytes)	/* and it's the optimal/smallest format */
                 iformat = 1;			/* so flip format */
         /* --- move results to returned image --- */
-        if (iformat != 1) {		/* using a .gf format */
+        if (iformat != 1)  		/* using a .gf format */
+        {
             if ( (image->pixmap = (unsigned char *) malloc (minbytes)) /* alloc pixmap */
                     == NULL) goto end_of_job;	/* quit if failed to allocate pixmap */
             memcpy (image->pixmap,gfpixcount[iformat-2],minbytes); /*copy local counts*/
@@ -557,7 +580,8 @@ static int	rasterizechar (FILE *fp, raster *image)
     /* --------------------------------------------------------------------------
     copy each integer in bitvec[] to raster pixmap, bit by bit
     -------------------------------------------------------------------------- */
-    if (iformat == 1) {	/* bit-by-bit representation of image */
+    if (iformat == 1)  	/* bit-by-bit representation of image */
+    {
         int	ipixel = 0;		/* pixmap index */
         /* --- first allocate image raster pixmap for character --- */
         if ( (image->pixmap = (unsigned char *) malloc (pixmapsz (image)))
@@ -565,10 +589,14 @@ static int	rasterizechar (FILE *fp, raster *image)
         image->format = iformat;	/* reset format */
         /* --- now store bit image in allocated raster --- */
         for (iscan=0; iscan<height; iscan++)	/* for each integer in bitvec[] */
-            for (ibit=0; ibit<width; ibit++) {	/* for all bits in this scanline */
-                if (getlongbit (bitvec[iscan],ibit) != 0) { /* check current scan pixel */
+            for (ibit=0; ibit<width; ibit++)  	/* for all bits in this scanline */
+            {
+                if (getlongbit (bitvec[iscan],ibit) != 0)   /* check current scan pixel */
+                {
                     setlongbit (image->pixmap,ipixel);
-                } else {			/*turn off corresponding raster bit*/
+                }
+                else  			/*turn off corresponding raster bit*/
+                {
                     unsetlongbit (image->pixmap,ipixel);
                 }
                 ipixel++;				/* bump image raster pixel */
@@ -610,7 +638,8 @@ static chardef	*getnextchar (mimetex_ctx *mctx, FILE *fp)
     /* --------------------------------------------------------------------------
     initialization
     -------------------------------------------------------------------------- */
-    while (parsestat == (-999)) {		/* flush entirely blank characters */
+    while (parsestat == (-999))  		/* flush entirely blank characters */
+    {
         /* --- find and interpret header line for next character --- */
         charnum = findnextchar (mctx,fp,&location);	/* read and parse header line */
         if (charnum < 0) goto error;	/* eof or error, no more chars */
@@ -670,13 +699,13 @@ static char *getcharname (char *fontname, int charnum)
     -------------------------------------------------------------------------- */
     /* --- recognized font family names and our corresponding numbers --- */
     static	char *fnames[] = {	/*font name from -n switch on command line*/ "cmr","cmmib","cmmi","cmsy","cmex","bbold","rsfs",
-                            "stmary","cyr", NULL
+                                                                             "stmary","cyr", NULL
                             };
     static	int    fnums[] = {	/* corresponding mimetex fontfamily number*/ CMR10,CMMIB10,CMMI10,CMSY10,CMEX10,BBOLD10,RSFS10,
-                            STMARY10,  CYR10,    -1
+                                                                             STMARY10,  CYR10,    -1
                             };
     static	int    offsets[] = {	/* symtable[ichar].charnum = charnum-offset*/     0,      0,     0,     0,     0,      0,    65,
-                              0,      0,    -1
+                                                                                      0,      0,    -1
                               };
     /* --- other local declarations --- */
     char	*charname = NULL;	/* character name returned to caller */
@@ -694,7 +723,7 @@ static char *getcharname (char *fontname, int charnum)
     flower[ichar] = '\000';		/* null-terminate lowercase fontname */
     if (strlen (flower) < 2) goto end_of_job;  /* no lookup match possible */
     /* --- look up lowercase fontname in our fnames[] table --- */
-    for (ifamily=0; ;ifamily++)	/* check fnames[] for flower */
+    for (ifamily=0; ; ifamily++)	/* check fnames[] for flower */
         if (fnames[ifamily] == NULL) goto end_of_job;   /* quit at end-of-table */
         else if (strstr (flower,fnames[ifamily]) != NULL) break;  /* found it */
     offset = offsets[ifamily];	/* symtable[ichar].charnum = charnum-offset*/
@@ -703,22 +732,27 @@ static char *getcharname (char *fontname, int charnum)
     now look up name for caller's charnum in ifamily, and return it to caller
     -------------------------------------------------------------------------- */
     /* --- search symtable[] for charnum in ifamily --- */
-    for (idef = 0; symtables[idef].table; idef++) {
+    for (idef = 0; symtables[idef].table; idef++)
+    {
         mathchardef *symtable = symtables[idef].table;
-        for (ichar=0; ;ichar++)	{
+        for (ichar=0; ; ichar++)
+        {
             /*search symtable[] for charnum in ifamily*/
             if (symtable[ichar].symbol == NULL)
                 goto end_of_job;   /* end-of-table */
-            else {
+            else
+            {
                 if (symtable[ichar].family == ifamily  /* found desired family */
-                        &&   symtable[ichar].handler == NULL)  /* and char isn't a "dummy" */ {
-                    if (symtable[ichar].charnum == charnum-offset) {
+                        &&   symtable[ichar].handler == NULL)  /* and char isn't a "dummy" */
+                {
+                    if (symtable[ichar].charnum == charnum-offset)
+                    {
                         charname = symtable[ichar].symbol; /* pointer to symbol name in table */
                         break;   /*got charnum*/
                     }
                 }
             }
-        }        
+        }
     }
 end_of_job:
     if (charname==NULL && isnoname)   /* want unnamed/undefined chars */
@@ -748,9 +782,9 @@ int	main (int argc, char *argv[])
     int	inarg=0, outarg=0;	/* argv[] indexes for infile, outfile */
     int	iserror = 1;		/* error signal */
     int	charnum,		/* character number (nextchar->charnum) */
-    nchars = 0;		/* #chars in font */
+        nchars = 0;		/* #chars in font */
     char	fontname[99] = "noname", /* font name */
-                        *getcharname();		/* get character name from its number */
+                           *getcharname();		/* get character name from its number */
     FILE	/* *fopen(),*/ *infp=stdin, *outfp=stdout; /* init file pointers */
     chardef	*nextchar, /* read and parse next char in infp */
             *fontdef[256];		/* chars stored using charnum as index */
@@ -768,14 +802,16 @@ int	main (int argc, char *argv[])
     mimetex_ctx_init(&mctx);
     mctx.msglevel = MSGLEVEL;	/* verbose if msglevel >= 9 */
     while (argc > ++argnum)	/* check for flags and filenames */
-        if (*argv[argnum] == '-') {	/* got some '-' flag */
+        if (*argv[argnum] == '-')  	/* got some '-' flag */
+        {
             char flag = tolower (* (argv[argnum]+1)); /* char following '-' */
             argnum++;			/* arg following flag is usually its value */
-            switch (flag) {	/* see what user wants to tell us */
-                /* --- no usage for clueless users yet --- */
+            switch (flag)  	/* see what user wants to tell us */
+            {
+            /* --- no usage for clueless users yet --- */
             default:
                 exit (iserror); /* exit quietly for unrecognized input */
-                /* --- adjustable program parameters (not checking input) --- */
+            /* --- adjustable program parameters (not checking input) --- */
             case 'g':
                 gformat  = atoi (argv[argnum]);
                 isrepeat = (gformat>=10?1:0);
@@ -815,7 +851,8 @@ int	main (int argc, char *argv[])
         fontdef[charnum] = (chardef *) NULL;	/* char doesn't exist yet */
     /* --- open input file (if necessary) --- */
     if (inarg > 0)		/* input from file, not from stdin */
-        if ( (infp = fopen (argv[inarg],"r")) == NULL) { /*try to open input file*/
+        if ( (infp = fopen (argv[inarg],"r")) == NULL)   /*try to open input file*/
+        {
             fprintf (mctx.msgfp,"gfuntype> can't open %s for read\n",argv[inarg]);
             goto end_of_job;
         }	/* report error and quit */
@@ -826,7 +863,8 @@ int	main (int argc, char *argv[])
     /* --------------------------------------------------------------------------
     process input file
     -------------------------------------------------------------------------- */
-    while ( (nextchar=getnextchar (&mctx, infp)) != NULL) { /* get each char in file */
+    while ( (nextchar=getnextchar (&mctx, infp)) != NULL)   /* get each char in file */
+    {
         /* --- display character info --- */
         if (mctx.msglevel >= 9)			/* verbose output requested */
             fprintf (mctx.msgfp,"gfuntype> Char#%3d, loc %4d: ul=(%d,%d) ll=(%d,%d)\n",
@@ -845,7 +883,8 @@ int	main (int argc, char *argv[])
     -------------------------------------------------------------------------- */
     /* --- open output file (if necessary) --- */
     if (outarg > 0)		/* output to a file, not to stdout */
-        if ( (outfp = fopen (argv[outarg],"w")) == NULL) { /*try to open output file*/
+        if ( (outfp = fopen (argv[outarg],"w")) == NULL)   /*try to open output file*/
+        {
             fprintf (mctx.msgfp,"gfuntype> can't open %s for write\n",argv[outarg]);
             goto end_of_job;
         }	/* report error and quit */
@@ -854,20 +893,20 @@ int	main (int argc, char *argv[])
     fprintf (outfp,"static\tchardef %c%s[] =\n   {\n", ' ',fontname);
     /* --- write characters comprising font --- */
     for (charnum=0; charnum<256; charnum++)   /*for each possible char in font*/
-        if (fontdef[charnum] != (chardef *) NULL) { /*check if char exists in font*/
+        if (fontdef[charnum] != (chardef *) NULL)   /*check if char exists in font*/
+        {
             char *charname = getcharname (fontname,charnum);
-            if (charname!=NULL || isnoname) {	/* char defined or want undefined */
+            if (charname!=NULL || isnoname)  	/* char defined or want undefined */
+            {
                 if (++nchars > 1)		/* bump count */
                     fprintf (outfp,",\n");		/* and terminate preceding chardef */
                 fprintf (outfp,"      /%c --- pixel bitmap for %s char#%d %s --- %c/\n",
                          '*',fontname,charnum, (charname==NULL?noname:charname),'*');
                 cstruct_chardef (fontdef[charnum],outfp,6);
             } /*emit chardef struct*/
-            else
-                if (0) fprintf (outfp,"NULL");	/* no character in this position */
+            else if (0) fprintf (outfp,"NULL");	/* no character in this position */
         } /* --- end-of-if(fontdef[]!=NULL) --- */
-        else
-            if (0) fprintf (outfp,"NULL");		/* no character in this position */
+        else if (0) fprintf (outfp,"NULL");		/* no character in this position */
     /* --- write trailer chardef and closing brace --- */
     fprintf (outfp,",\n");			/* finish up last map from loop */
     fprintf (outfp,"      /%c --- trailer  --- %c/\n",'*','*'); /* trailer... */
