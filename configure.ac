@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.61)
 AC_INIT(libmimetex, 1.71.0, mozo@mozo.jp)
-AC_CONFIG_SRCDIR([mimetex.c])
+AC_CONFIG_SRCDIR([src/mimetex.c])
 AC_CONFIG_HEADER([config.h])
 
 AM_INIT_AUTOMAKE
